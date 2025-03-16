@@ -15,7 +15,7 @@ public class Compra {
 
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
-    private Proovedor proovedor;
+    private Proveedor proveedor;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")

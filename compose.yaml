@@ -13,6 +13,7 @@ services:
 
   db:
     image: postgres:17
+    container_name: postgres_container
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -27,5 +28,20 @@ services:
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com  # Cambia esto si lo necesitas
+      PGADMIN_DEFAULT_PASSWORD: adminpassword # Cambia esto si lo necesitas
+    ports:
+      - "5050:80"  # Accede a pgAdmin en http://localhost:5050
+    depends_on:
+      - db
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
 volumes:
   postgres-data:
+  pgadmin-data:

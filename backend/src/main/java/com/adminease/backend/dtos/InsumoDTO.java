@@ -1,33 +1,26 @@
-package com.adminease.backend.model;
+package com.adminease.backend.dtos;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.List;
 
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Insumo {
+public class InsumoDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long insumoId;
-
     private String codigo;
     private String nombre;
     private String unidadMedida;
     private Integer stock;
     private String categoria;
+    private List<InsumosProductoDTO> productosInsumo;
+    private List<MovimientoInsumoDTO> movimientosInsumo;
 
-    @OneToMany(mappedBy = "insumo")
-    private List<InsumosProducto> productosInsumo;
 
-    @OneToMany(mappedBy = "insumo")
-    private List<MovimientoInsumo> movimientosInsumo;
 }
+

@@ -1,6 +1,5 @@
-package com.adminease.backend.model;
+package com.adminease.backend.dtos;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,18 +9,11 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Usuario {
+public class UsuarioDTO {
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nombre;
     private String contrasena;
+    private Long rolId;
 
-    @ManyToOne
-    @JoinColumn(name = "rol_id")
-    private Rol rol;
 }

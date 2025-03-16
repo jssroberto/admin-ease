@@ -1,6 +1,5 @@
-package com.adminease.backend.model;
+package com.adminease.backend.dtos;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,18 +12,11 @@ import java.sql.Timestamp;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class MovimientoInsumo {
+public class MovimientoInsumoDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long movimientoInsumoId;
-
     private Timestamp fecha;
     private BigDecimal cantidad;
     private String tipoMovimiento;
-
-    @ManyToOne
-    @JoinColumn(name = "insumo_id")
-    private Insumo insumo;
+    private Long insumoId;
 }

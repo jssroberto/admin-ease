@@ -43,7 +43,7 @@ public class Insumo {
 
     @NotNull
     @ManyToOne
-    private CategoriaInsumo categoria;
+    private CategoriaInsumo categoriaInsumo;
 
     @OneToMany(mappedBy = "insumo")
     private List<InsumosProducto> insumosProductos;

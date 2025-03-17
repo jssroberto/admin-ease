@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@DiscriminatorValue("MERMA")
 public class MermaInsumo extends MovimientoInsumo{
 
     @NotNull

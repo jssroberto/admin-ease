@@ -8,14 +8,17 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class MermaInsumoDTO {
+public class MermaInsumoDTO extends MovimientoInsumoDTO{
 
     @NotNull
     private RazonMermaDTO razonMermaDTO;
 
     @NotNull
     private MermaDTO mermaDTO;
+
+    public MermaInsumoDTO(){
+        setTipoMovimiento("MERMA");
+    }
 
 }

@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class MovimientoInsumoDTO {
-//
-//    private Long id;
 
     @NotNull
     @PastOrPresent

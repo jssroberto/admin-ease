@@ -1,6 +1,6 @@
 package com.adminease.backend;
 
-import com.adminease.backend.dtos.ProveedorDTO;
+import com.adminease.backend.dto.ProveedorDTO;
 import com.adminease.backend.model.Proveedor;
 import com.adminease.backend.mapper.ProveedorMapper;
 import org.junit.jupiter.api.Test;

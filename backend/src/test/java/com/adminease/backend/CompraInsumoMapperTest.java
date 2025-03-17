@@ -1,8 +1,8 @@
 package com.adminease.backend;
 
-import com.adminease.backend.dtos.CompraDTO;
-import com.adminease.backend.dtos.CompraInsumoDTO;
-import com.adminease.backend.dtos.MovimientoInsumoDTO;
+import com.adminease.backend.dto.CompraDTO;
+import com.adminease.backend.dto.CompraInsumoDTO;
+import com.adminease.backend.dto.MovimientoInsumoDTO;
 import com.adminease.backend.model.Compra;
 import com.adminease.backend.model.CompraInsumo;
 import com.adminease.backend.model.MovimientoInsumo;

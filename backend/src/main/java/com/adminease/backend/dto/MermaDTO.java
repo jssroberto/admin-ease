@@ -1,4 +1,4 @@
-package com.adminease.backend.dtos;
+package com.adminease.backend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,10 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PermisoDTO {
+public class MermaDTO {
 
-    private Long id;
-    private String nombre;
-    private List<Long> rolIds;
+    private Long mermaId;
+    private Long usuarioId;
+    private List<MermaInsumoDTO> mermaInsumo;
+
 }

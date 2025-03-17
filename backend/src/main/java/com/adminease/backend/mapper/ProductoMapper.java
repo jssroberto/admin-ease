@@ -1,6 +1,6 @@
 package com.adminease.backend.mapper;
 
-import com.adminease.backend.dtos.ProductoDTO;
+import com.adminease.backend.dto.ProductoDTO;
 import com.adminease.backend.model.Producto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

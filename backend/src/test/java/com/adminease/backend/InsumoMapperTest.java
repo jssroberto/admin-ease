@@ -1,6 +1,6 @@
 package com.adminease.backend;
 
-import com.adminease.backend.dtos.InsumoDTO;
+import com.adminease.backend.dto.InsumoDTO;
 import com.adminease.backend.mapper.InsumoMapper;
 import com.adminease.backend.model.Insumo;
 import org.junit.jupiter.api.Test;

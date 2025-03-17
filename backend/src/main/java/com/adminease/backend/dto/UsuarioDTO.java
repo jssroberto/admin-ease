@@ -1,21 +1,19 @@
-package com.adminease.backend.dtos;
+package com.adminease.backend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RolDTO {
+public class UsuarioDTO {
 
     private Long id;
-    private String name;
-    private List<Long> usuarioIds;
-    private List<Long> permisoIds;
+    private String nombre;
+    private String contrasena;
+    private Long rolId;
 
 }

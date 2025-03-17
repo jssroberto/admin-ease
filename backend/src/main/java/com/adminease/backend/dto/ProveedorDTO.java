@@ -1,4 +1,4 @@
-package com.adminease.backend.dtos;
+package com.adminease.backend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,10 +9,10 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SalidaInsumoDTO {
+public class ProveedorDTO {
 
-    private Long salidaInsumoId;
-    private Long movimientoInsumoId;
-    private Long salidaId;
+    private Long proveedorId;
+    private String nombre;
+
 
 }

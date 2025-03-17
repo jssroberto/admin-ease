@@ -1,18 +1,20 @@
-package com.adminease.backend.dtos;
+package com.adminease.backend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProveedorDTO {
+public class ProductoDTO {
 
-    private Long proveedorId;
+    private Long productoId;
     private String nombre;
-
-
+    private String categoria;
+    private List<Long> insumosProductoIds;
 }

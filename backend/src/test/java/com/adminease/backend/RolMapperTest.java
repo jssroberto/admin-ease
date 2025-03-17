@@ -1,6 +1,6 @@
 package com.adminease.backend;
 
-import com.adminease.backend.dtos.RolDTO;
+import com.adminease.backend.dto.RolDTO;
 import com.adminease.backend.model.Permiso;
 import com.adminease.backend.model.Rol;
 import com.adminease.backend.mapper.RolMapper;

@@ -1,6 +1,6 @@
 package com.adminease.backend;
 
-import com.adminease.backend.dtos.SalidaDTO;
+import com.adminease.backend.dto.SalidaDTO;
 import com.adminease.backend.model.Salida;
 import com.adminease.backend.mapper.SalidaMapper;
 import com.adminease.backend.model.SalidaInsumo;

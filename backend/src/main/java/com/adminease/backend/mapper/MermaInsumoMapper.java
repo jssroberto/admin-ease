@@ -1,6 +1,6 @@
 package com.adminease.backend.mapper;
 
-import com.adminease.backend.dtos.MermaInsumoDTO;
+import com.adminease.backend.dto.MermaInsumoDTO;
 import com.adminease.backend.model.MermaInsumo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

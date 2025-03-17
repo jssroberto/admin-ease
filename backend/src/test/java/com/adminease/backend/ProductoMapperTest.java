@@ -1,6 +1,6 @@
 package com.adminease.backend;
 
-import com.adminease.backend.dtos.ProductoDTO;
+import com.adminease.backend.dto.ProductoDTO;
 import com.adminease.backend.model.InsumosProducto;
 import com.adminease.backend.model.Producto;
 import com.adminease.backend.mapper.ProductoMapper;

@@ -1,6 +1,6 @@
 package com.adminease.backend.mapper;
 
-import com.adminease.backend.dtos.InsumoDTO;
+import com.adminease.backend.dto.InsumoDTO;
 import com.adminease.backend.model.Insumo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

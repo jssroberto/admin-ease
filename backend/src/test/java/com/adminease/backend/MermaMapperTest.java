@@ -1,13 +1,11 @@
 package com.adminease.backend;
 
-import com.adminease.backend.dtos.MermaDTO;
+import com.adminease.backend.dto.MermaDTO;
 import com.adminease.backend.model.Merma;
 import com.adminease.backend.mapper.MermaMapper;
 import com.adminease.backend.model.Usuario;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

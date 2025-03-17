@@ -1,6 +1,6 @@
 package com.adminease.backend.mapper;
 
-import com.adminease.backend.dtos.UsuarioDTO;
+import com.adminease.backend.dto.UsuarioDTO;
 import com.adminease.backend.model.Usuario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

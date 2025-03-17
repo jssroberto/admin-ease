@@ -1,5 +1,6 @@
 package com.adminease.backend.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +12,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MermaInsumoDTO {
 
-    private Long mermaInsumoId;
-    private Long movimientoInsumoId;
-    private Long mermaId;
-    private String razon;
+    @NotNull
+    private RazonMermaDTO razonMermaDTO;
+
+    @NotNull
+    private MermaDTO mermaDTO;
+
 }

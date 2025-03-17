@@ -7,14 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Rol {
+public class RazonMerma {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,17 +20,6 @@ public class Rol {
 
     @NotBlank
     @Column(nullable = false, unique = true)
-    private String nombre;
-
-    @OneToMany(mappedBy = "rol")
-    private List<Usuario> usuarios;
-
-    @ManyToMany
-    @JoinTable(
-            name = "permisos_rol",
-            joinColumns = @JoinColumn(name = "rol_id"),
-            inverseJoinColumns = @JoinColumn(name = "permiso_id")
-    )
-    private List<Permiso> permisos;
+    private String descripcion;
 
 }

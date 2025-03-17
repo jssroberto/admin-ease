@@ -1,5 +1,6 @@
 package com.adminease.backend.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +15,12 @@ import java.util.List;
 public class RolDTO {
 
     private Long id;
-    private String name;
-    private List<Long> usuarioIds;
-    private List<Long> permisoIds;
+
+    @NotBlank
+    private String nombre;
+
+    private List<UsuarioDTO> usuarioDTOS;
+
+    private List<PermisoDTO> permisoDTOS;
 
 }

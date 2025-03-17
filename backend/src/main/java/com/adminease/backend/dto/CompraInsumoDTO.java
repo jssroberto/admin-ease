@@ -1,5 +1,7 @@
 package com.adminease.backend.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,13 +11,18 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class CompraInsumoDTO {
+public class CompraInsumoDTO extends MovimientoInsumoDTO{
 
-    private Long compraInsumoId;
-    private MovimientoInsumoDTO movimientoInsumo;
-    private CompraDTO compra;
-    private BigDecimal precio;
+    @NotNull
+    @Positive
+    private Double precio;
+
+    @NotNull
+    private CompraDTO compraDTO;
+
+    public CompraInsumoDTO() {
+        setTipoMovimiento("COMPRA");
+    }
 
 }

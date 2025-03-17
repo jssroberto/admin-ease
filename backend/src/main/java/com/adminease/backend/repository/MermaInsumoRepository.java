@@ -7,10 +7,4 @@ import java.util.List;
 
 @Repository
 public interface MermaInsumoRepository extends JpaRepository<MermaInsumo, Long> {
-
-    // Buscar todos los insumos de una merma específica
-    List<MermaInsumo> findByMerma_MermaId(Long mermaId);
-
-    // Buscar todas las mermas relacionadas con un movimiento de insumo específico
-    List<MermaInsumo> findByMovimientoInsumo_MovimientoInsumoId(Long movimientoInsumoId);
 }

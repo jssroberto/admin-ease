@@ -1,6 +1,9 @@
 package com.adminease.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,16 +18,22 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Compra {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long compraId;
+    private Long id;
 
-    private BigDecimal total;
+    @NotNull
+    @Positive
+    @Column(nullable = false)
+    private Double total;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
     private Proveedor proveedor;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;

@@ -1,5 +1,6 @@
 package com.adminease.backend.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +14,14 @@ import java.util.List;
 @AllArgsConstructor
 public class SalidaDTO {
 
-    private Long salidaId;
-    private String area;
-    private Long usuarioId;
-    private List<Long> salidaInsumoIds;
+    private Long id;
+
+    @NotNull
+    private AreaDTO area;
+
+    @NotNull
+    private UsuarioDTO usuarioDTO;
+
+    private List<SalidaInsumoDTO> salidaInsumoDTOs;
 
 }

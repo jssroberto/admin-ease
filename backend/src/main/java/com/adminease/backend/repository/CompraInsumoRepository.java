@@ -8,6 +8,4 @@ import java.util.List;
 @Repository
 public interface CompraInsumoRepository extends JpaRepository<CompraInsumo, Long> {
 
-    // Buscar todos los insumos de una compra específica
-    List<CompraInsumo> findByCompra_CompraId(Long compraId);
 }

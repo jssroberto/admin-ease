@@ -8,9 +8,4 @@ import java.util.List;
 @Repository
 public interface CompraRepository extends JpaRepository<Compra, Long> {
 
-    // Buscar compras por proveedor
-    List<Compra> findByProveedor_ProveedorId(Long proveedorId);
-
-    // Buscar compras por usuario
-    List<Compra> findByUsuario_UsuarioId(Long usuarioId);
 }

@@ -1,5 +1,7 @@
 package com.adminease.backend.dto;
 
+import com.adminease.backend.model.SalidaInsumo;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,12 +9,14 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class SalidaInsumoDTO {
+public class SalidaInsumoDTO extends MovimientoInsumoDTO{
 
-    private Long salidaInsumoId;
-    private Long movimientoInsumoId;
-    private Long salidaId;
+    @NotNull
+    private SalidaDTO salidaDTO;
+
+    public SalidaInsumoDTO() {
+        setTipoMovimiento("SALIDA");
+    }
 
 }

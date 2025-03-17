@@ -1,6 +1,7 @@
 package com.adminease.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,16 +15,21 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Salida {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long salidaId;
+    private Long id;
 
-    private String area;
+    @NotNull
+    @ManyToOne
+    private Area area;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     @OneToMany(mappedBy = "salida")
-    private List<SalidaInsumo> salidaInsumo;
+    private List<SalidaInsumo> salidaInsumos;
+
 }

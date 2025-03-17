@@ -7,10 +7,4 @@ import java.util.List;
 
 @Repository
 public interface PermisoRepository extends JpaRepository<Permiso, Long> {
-
-    // Buscar permiso por nombre (ignorando mayúsculas/minúsculas)
-    Permiso findByNombreIgnoreCase(String nombre);
-
-    // Buscar todos los permisos asociados a un rol específico
-    List<Permiso> findByRoles_Id(Long rolId);
 }

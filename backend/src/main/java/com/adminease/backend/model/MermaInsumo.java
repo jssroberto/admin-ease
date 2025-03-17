@@ -1,30 +1,26 @@
 package com.adminease.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class MermaInsumo {
+public class MermaInsumo extends MovimientoInsumo{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mermaInsumoId;
+    @NotNull
+    @ManyToOne
+    private RazonMerma razon;
 
-    @OneToOne
-    @JoinColumn(name = "movimiento_insumo_id")
-    private MovimientoInsumo movimientoInsumo;
-
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "merma_id")
     private Merma merma;
 
-    private String razon;
 }

@@ -1,5 +1,7 @@
 package com.adminease.backend.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,12 +15,16 @@ import java.math.BigDecimal;
 public class InsumosProductoDTO {
 
     private Long id;
-    private Long insumoId;
-    private Long productoId;
-    private BigDecimal cantidad;
 
+    @NotNull
+    @Positive
+    private Double cantidad;
 
+    @NotNull
+    private InsumoDTO insumoDTO;
 
+    @NotNull
+    private ProductoDTO productoDTO;
 
 }
 

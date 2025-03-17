@@ -1,6 +1,8 @@
 package com.adminease.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,20 +15,16 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class CompraInsumo {
+@DiscriminatorValue("COMPRA")
+public class CompraInsumo extends MovimientoInsumo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long compraInsumoId;
-
-    @OneToOne
-    @JoinColumn(name = "movimiento_insumo_id")
-    private MovimientoInsumo movimientoInsumo;
+    @NotNull
+    @Positive
+    @Column(nullable = false)
+    private Double precio;
 
     @ManyToOne
     @JoinColumn(name = "compra_id")
     private Compra compra;
-
-    private BigDecimal precio;
 
 }

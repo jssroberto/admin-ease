@@ -7,10 +7,4 @@ import java.util.List;
 
 @Repository
 public interface SalidaRepository extends JpaRepository<Salida, Long> {
-
-    // Buscar todas las salidas realizadas por un usuario específico
-    List<Salida> findByUsuario_UsuarioId(Long usuarioId);
-
-    // Buscar salidas por área
-    List<Salida> findByArea(String area);
 }

@@ -1,6 +1,7 @@
 package com.adminease.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,17 +12,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class SalidaInsumo {
+@DiscriminatorValue("SALIDA")
+public class SalidaInsumo extends MovimientoInsumo{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long salidaInsumoId;
-
-    @OneToOne
-    @JoinColumn(name = "movimiento_insumo_id")
-    private MovimientoInsumo movimientoInsumo;
-
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "salida_id")
     private Salida salida;
+
 }

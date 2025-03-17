@@ -1,5 +1,7 @@
 package com.adminease.backend.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,10 +16,18 @@ import java.util.List;
 @AllArgsConstructor
 public class CompraDTO {
 
-    private Long compraId;
-    private BigDecimal total;
-    private ProveedorDTO proveedor;  // Para incluir los detalles del proveedor
-    private UsuarioDTO usuario;      // Para incluir los detalles del usuario
-    private List<CompraInsumoDTO> compraInsumos; // Para incluir los detalles de los insumos
+    private Long id;
+
+    @NotNull
+    @Positive
+    private Double total;
+
+    @NotNull
+    private ProveedorDTO proveedorDTO;
+
+    @NotNull
+    private UsuarioDTO usuarioDTO;
+
+    private List<CompraInsumoDTO> compraInsumoDTOs;
 
 }

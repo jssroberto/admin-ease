@@ -1,5 +1,6 @@
 package com.adminease.backend.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 public class MermaDTO {
 
-    private Long mermaId;
-    private Long usuarioId;
-    private List<MermaInsumoDTO> mermaInsumo;
+    private Long id;
+
+    @NotNull
+    private UsuarioDTO usuarioDTO;
+
+    private List<MermaInsumoDTO> mermaInsumoDTOs;
 
 }

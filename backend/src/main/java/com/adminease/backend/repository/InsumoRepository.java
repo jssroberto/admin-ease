@@ -16,8 +16,9 @@ public interface InsumoRepository extends JpaRepository<Insumo, Long> {
 
     Optional<Insumo> findByCodigo(String codigo);
 
-    @Query("SELECT i FROM Insumo i WHERE unaccent(LOWER(i.nombre)) LIKE unaccent(LOWER(concat('%', :nombre, '%')))")
-    List<Insumo> findByNombreContainingIgnoreCaseAndAccents(@Param("nombre") String nombre);
+    // Accents not working yet
+//    @Query("SELECT i FROM Insumo i WHERE unaccent(LOWER(i.nombre)) LIKE unaccent(LOWER(concat('%', :nombre, '%')))")
+    List<Insumo> findByNombreContainingIgnoreCase(@Param("nombre") String nombre);
 
     List<Insumo> findByStockGreaterThan(Double stock);
 

@@ -8,7 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 @Mapper(componentModel = "spring", uses = {SalidaInsumoMapper.class, EntityResolver.class})
 public interface SalidaMapper {
@@ -29,6 +30,6 @@ public interface SalidaMapper {
     // Automatically set fecha to current timestamp after mapping
     @AfterMapping
     default void setCurrentTimestamp(@MappingTarget Salida salida) {
-        salida.setFecha(LocalDateTime.now());
+        salida.setFecha(ZonedDateTime.now(ZoneOffset.UTC));
     }
 }

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Setter
@@ -25,7 +26,7 @@ public class Salida {
     @NotNull
     @PastOrPresent
     @Column(nullable = false)
-    private LocalDateTime fecha;
+    private ZonedDateTime fecha;
 
     @NotNull
     @ManyToOne

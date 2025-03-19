@@ -3,17 +3,15 @@ package com.adminease.backend.service;
 import com.adminease.backend.api.dto.request.SalidaRequest;
 import com.adminease.backend.api.dto.response.SalidaInsumoResponse;
 import com.adminease.backend.api.dto.response.SalidaResponse;
-import com.adminease.backend.dto.SalidaDTO;
-import com.adminease.backend.mapper.SalidaInsumoMapper;
 import com.adminease.backend.mapper.SalidaMapper;
-import com.adminease.backend.model.*;
-import com.adminease.backend.repository.*;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import com.adminease.backend.model.Salida;
+import com.adminease.backend.repository.SalidaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -28,13 +26,18 @@ public class SalidaService {
     public SalidaResponse createSalida(SalidaRequest request) {
         // Convert request to entity
         Salida salida = salidaMapper.toEntity(request);
-        salida.setFecha(LocalDateTime.now());
-        // Create and map SalidaInsumos
-
+        salida.setFecha(ZonedDateTime.now(ZoneOffset.UTC));
         // Persist Salida
         salida = salidaRepository.save(salida);
 
-        return salidaMapper.toResponse(salida);
+        List<SalidaInsumoResponse> responses = salidaInsumoService.createSalidaInsumos(
+                salida,
+                request.getSalidaInsumoRequests());
+
+        SalidaResponse salidaResponse = salidaMapper.toResponse(salida);
+        salidaResponse.setSalidaInsumos(responses);
+
+        return salidaResponse;
     }
 
 }

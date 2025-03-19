@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Setter
@@ -33,7 +34,7 @@ public class Compra {
     @NotNull
     @PastOrPresent
     @Column(nullable = false)
-    private LocalDateTime fecha;
+    private ZonedDateTime fecha;
 
     @NotNull
     @ManyToOne

@@ -1,23 +1,20 @@
 package com.adminease.backend.api.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SalidaInsumoResponse {
+public class PermisoResponse {
 
-    private Long id;
+    Long id;
 
-    private Double cantidad;
-
-    private Long insumoId;
+    String nombre;
 
 }
+

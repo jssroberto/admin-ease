@@ -1,35 +1,23 @@
-//package com.adminease.backend.mapper;
-//
-//import com.adminease.backend.dto.InsumoDTO;
-//import com.adminease.backend.model.Insumo;
-//import com.adminease.backend.repository.InsumoRepository;
-//import org.mapstruct.Context;
-//import org.mapstruct.Mapper;
-//import org.mapstruct.Mapping;
-//import org.mapstruct.Named;
-//import org.mapstruct.factory.Mappers;
-//
-//@Mapper(uses = {UnidadMedidaMapper.class, CategoriaInsumoMapper.class, InsumosProductoMapper.class})
-//public interface InsumoMapper {
-//
-//    InsumoMapper INSTANCE = Mappers.getMapper(InsumoMapper.class);
-//
-//    @Mapping(source = "unidadMedida", target = "unidadMedidaDTO")
-//    @Mapping(source = "categoriaInsumo", target = "categoriaInsumoDTO")
-//    @Mapping(source = "insumosProductos", target = "insumosProductoDTOS")
-//    InsumoDTO toDTO(Insumo insumo);
-//
-//    @Mapping(source = "unidadMedidaDTO", target = "unidadMedida")
-//    @Mapping(source = "categoriaInsumoDTO", target = "categoriaInsumo")
-//    @Mapping(source = "insumosProductoDTOS", target = "insumosProductos")
-//    Insumo toEntity(InsumoDTO insumoDTO);
-//
-//    @Named("idToInsumo")
-//    default Insumo idToInsumo(Long insumoId, @Context InsumoRepository insumoRepository) {
-//        if (insumoId == null) {
-//            return null;
-//        }
-//        return insumoRepository.findById(insumoId)
-//                .orElseThrow(() -> new IllegalArgumentException("Insumo not found with ID: " + insumoId));
-//    }
-//}
+package com.adminease.backend.mapper;
+
+import com.adminease.backend.api.dto.request.InsumoRequest;
+import com.adminease.backend.api.dto.response.InsumoResponse;
+import com.adminease.backend.dto.InsumoDTO;
+import com.adminease.backend.model.Insumo;
+import com.adminease.backend.repository.InsumoRepository;
+import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
+
+@Mapper(componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface InsumoMapper {
+
+    @Mapping(target = "unidadMedida", ignore = true)
+    @Mapping(target = "categoriaInsumo", ignore = true)
+    @Mapping(target = "insumosProductos", ignore = true)
+    @Mapping(target = "movimientoInsumos", ignore = true)
+    Insumo toEntity(InsumoRequest request);
+
+    // Keep response mapping as original
+    InsumoResponse toResponse(Insumo insumo);
+}

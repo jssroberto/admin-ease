@@ -21,7 +21,7 @@ public class CompraInsumo extends MovimientoInsumo {
     @NotNull
     @Positive
     @Column(nullable = false)
-    private Double precio;
+    private Double precioUnitario;
 
     @ManyToOne
     @JoinColumn(name = "compra_id")

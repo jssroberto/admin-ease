@@ -1,16 +1,34 @@
 package com.adminease.backend.mapper;
 
-import com.adminease.backend.dto.SalidaDTO;
+import com.adminease.backend.api.dto.request.SalidaRequest;
+import com.adminease.backend.api.dto.response.SalidaResponse;
 import com.adminease.backend.model.Salida;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+import java.time.LocalDateTime;
+
+@Mapper(componentModel = "spring", uses = {SalidaInsumoMapper.class, EntityResolver.class})
 public interface SalidaMapper {
 
-    SalidaMapper INSTANCE = Mappers.getMapper(SalidaMapper.class);
+    // Convert SalidaRequest to Salida (auto-set fecha to current time)
+    @Mapping(target = "fecha", ignore = true) // Server-generated, not part of request
+    @Mapping(target = "area", source = "areaId", qualifiedByName = "idToArea")
+    @Mapping(target = "usuario", source = "usuarioId", qualifiedByName = "idToUsuario")
+    @Mapping(target = "salidaInsumos", source = "salidaInsumoRequests")
+    Salida toEntity(SalidaRequest request);
 
-    SalidaDTO toDTO(Salida salida);
+    // Convert Salida to SalidaResponse (flatten nested IDs)
+    @Mapping(target = "areaId", source = "area.id")
+    @Mapping(target = "usuarioId", source = "usuario.id")
+    @Mapping(target = "salidaInsumos", source = "salidaInsumos")
+    SalidaResponse toResponse(Salida salida);
 
-    Salida toEntity(SalidaDTO salidaDTO);
+    // Automatically set fecha to current timestamp after mapping
+    @AfterMapping
+    default void setCurrentTimestamp(@MappingTarget Salida salida) {
+        salida.setFecha(LocalDateTime.now());
+    }
 }

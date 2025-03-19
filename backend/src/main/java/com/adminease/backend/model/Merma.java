@@ -2,11 +2,13 @@ package com.adminease.backend.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -19,6 +21,11 @@ public class Merma {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotNull
+    @PastOrPresent
+    @Column(nullable = false)
+    private LocalDateTime fecha;
 
     @NotNull
     @ManyToOne

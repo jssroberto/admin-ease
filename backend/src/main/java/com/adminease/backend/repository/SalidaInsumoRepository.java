@@ -8,4 +8,7 @@ import java.util.List;
 
 @Repository
 public interface SalidaInsumoRepository extends JpaRepository<SalidaInsumo, Long> {
+
+    List<SalidaInsumo> findByInsumoId(Long insumoId);
+
 }

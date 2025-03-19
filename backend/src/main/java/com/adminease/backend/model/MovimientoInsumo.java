@@ -28,11 +28,6 @@ public abstract class MovimientoInsumo {
     private Long id;
 
     @NotNull
-    @PastOrPresent
-    @Column(nullable = false)
-    private LocalDateTime fecha;
-
-    @NotNull
     @Positive
     @Column(nullable = false)
     private Double cantidad;

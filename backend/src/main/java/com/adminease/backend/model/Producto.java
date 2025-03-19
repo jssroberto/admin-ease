@@ -27,7 +27,7 @@ public class Producto {
 
     @NotNull
     @ManyToOne
-    private CategoriaProducto categoria;
+    private CategoriaProducto categoriaProducto;
 
     @NotNull
     @OneToMany(mappedBy = "producto")

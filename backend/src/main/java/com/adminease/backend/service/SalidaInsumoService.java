@@ -1,7 +1,6 @@
 package com.adminease.backend.service;
 
 import com.adminease.backend.api.dto.request.SalidaInsumoRequest;
-import com.adminease.backend.api.dto.response.InsumoResponse;
 import com.adminease.backend.api.dto.response.SalidaInsumoResponse;
 import com.adminease.backend.mapper.SalidaInsumoMapper;
 import com.adminease.backend.model.Insumo;
@@ -23,6 +22,7 @@ import java.util.Optional;
 public class SalidaInsumoService {
 
     private final SalidaInsumoRepository salidaInsumoRepository;
+    private final InsumoService insumoService;
 
     private final InsumoRepository insumoRepository;
 
@@ -44,6 +44,12 @@ public class SalidaInsumoService {
         }
 
         salidaInsumos = salidaInsumoRepository.saveAll(salidaInsumos);
+
+        for (SalidaInsumo salidaInsumo : salidaInsumos) {
+            insumoService.decreaseStock(
+                    salidaInsumo.getInsumo().getId(),
+                    salidaInsumo.getCantidad());
+        }
 
         List<SalidaInsumoResponse> responses = new ArrayList<>();
 

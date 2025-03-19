@@ -20,6 +20,7 @@ public class SalidaService {
 
     private final SalidaRepository salidaRepository;
     private final SalidaInsumoService salidaInsumoService;
+    private final InsumoService insumoService;
     private final SalidaMapper salidaMapper;
 
     @Transactional
@@ -36,6 +37,9 @@ public class SalidaService {
 
         SalidaResponse salidaResponse = salidaMapper.toResponse(salida);
         salidaResponse.setSalidaInsumos(responses);
+
+
+
 
         return salidaResponse;
     }

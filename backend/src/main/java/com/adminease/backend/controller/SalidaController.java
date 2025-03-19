@@ -2,7 +2,6 @@ package com.adminease.backend.controller;
 
 import com.adminease.backend.api.dto.request.SalidaRequest;
 import com.adminease.backend.api.dto.response.SalidaResponse;
-import com.adminease.backend.dto.SalidaDTO;
 import com.adminease.backend.service.SalidaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

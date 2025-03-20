@@ -46,13 +46,21 @@ services:
         condition: service_healthy
 
   frontend_app:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     container_name: react_container
     ports:
-      - "3000:80"
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - react-data:/app/node_modules
+    environment:
+      - CHOKIDOKI_USEPOLLING=true
     depends_on:
       - backend_app
 
 volumes:
   postgres-data:
   pgadmin-data:
+  react-data:

@@ -38,9 +38,6 @@ public class SalidaService {
         SalidaResponse salidaResponse = salidaMapper.toResponse(salida);
         salidaResponse.setSalidaInsumos(responses);
 
-
-
-
         return salidaResponse;
     }
 

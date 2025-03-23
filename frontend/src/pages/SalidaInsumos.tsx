@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { ScanBarcode, Minus, Plus, Trash, Trash2 } from "lucide-react";
 import {
   Select,
@@ -7,11 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import SearchInsumo from "@/components/SearchInsumo";
 
 interface Insumo {
   id: string;
   nombre: string;
   cantidad: number;
+  cantidadDisponible?: number;
   unidad?: string;
 }
 
@@ -24,20 +27,21 @@ const SalidasInsumos: React.FC = () => {
   const [terminoBusqueda, setTerminoBusqueda] = useState<string>("");
 
   // Estado para el insumo seleccionado
-  const [insumoSeleccionado, setInsumoSeleccionado] = useState<Insumo | null>({
-    id: "0",
-    nombre: "MANTEQUILLA LALA 100 360gr",
-    cantidad: 10,
-  });
+  const [insumoSeleccionado, setInsumoSeleccionado] = useState<Insumo | null>(null);
 
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState<number>(10);
 
-  const [insumosSalida, setInsumosSalida] = useState<Insumo[]>([
-    { id: "1", nombre: "MANTEQUILLA LALA 100 360gr", cantidad: 10 },
-    { id: "2", nombre: "HARINA MARCA 1000gr", cantidad: 20 },
-    { id: "3", nombre: "CAJA HUEVOS", cantidad: 2 },
-    { id: "4", nombre: "LECHE DE SOYA LIGHT 1LT", cantidad: 22 },
-  ]);
+  const [insumosSalida, setInsumosSalida] = useState<Insumo[]>([]);
+
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+  const handleInsumoSelect = (insumo: Insumo) => {
+    setInsumoSeleccionado({
+      ...insumo,
+      cantidad: 1 // Inicializar con cantidad 1
+    });
+    setCantidadSeleccionada(1);
+  };
 
   const cambiarCantidad = (id: string, nuevaCantidad: number) => {
     setInsumosSalida((prevInsumos) =>
@@ -86,6 +90,32 @@ const SalidasInsumos: React.FC = () => {
     setCantidadSeleccionada(cantidadSeleccionada + 1);
   };
 
+  const finalizarRegistro = async () => {
+    if (insumosSalida.length === 0) {
+      alert("Debe seleccionar al menos un insumo");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const salidas = insumosSalida.map(insumo => ({
+        insumoId: parseInt(insumo.id),
+        cantidad: insumo.cantidad,
+        area: areaSeleccionada,
+        fecha: new Date().toISOString()
+      }));
+
+      await axios.post('/api/salidas', salidas);
+      alert('Salidas de insumos registradas correctamente');
+      setInsumosSalida([]);
+    } catch (error) {
+      console.error('Error al registrar salidas:', error);
+      alert('Error al registrar las salidas de insumos');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <div className="flex h-full p-6">
       {/* left section */}
@@ -111,26 +141,10 @@ const SalidasInsumos: React.FC = () => {
             </Select>
         </div>
 
-        <div className="mb-6">
-          <label className="block text-sm font-normal text-gray-600 mb-1">
-            Escanea o busca el insumo
-          </label>
-          <div className="flex gap-2 mb-2">
-            <button className="flex items-center justify-center bg-[#4B6ABB] hover:bg-blue-800 text-white px-4 py-2 rounded-md cursor-pointer transition duration-200 ease-in-out">
-              <ScanBarcode size={20} className="mr-2" />
-              Escanea el insumo
-            </button>
-          </div>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Buscar insumo..."
-              value={terminoBusqueda}
-              onChange={(e) => setTerminoBusqueda(e.target.value)}
-              className="block w-sm bg-white border border-gray-300 rounded-md py-2 px-3 text-base focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
+        
+          {/* nuevo componente */}
+          <SearchInsumo onSelectInsumo={handleInsumoSelect} />
+        
 
         {insumoSeleccionado && (
           <div className="mb-6">
@@ -141,7 +155,9 @@ const SalidasInsumos: React.FC = () => {
               <div className="text-base font-medium">
                 {insumoSeleccionado.nombre}
               </div>
-              <div className="text-sm text-gray-500">51 piezas restantes</div>
+              <div className="text-sm text-gray-500">
+                {insumoSeleccionado.cantidadDisponible || 0} {insumoSeleccionado.unidad || 'unidades'} disponibles
+              </div>
             </div>
 
             <div className="mb-4">
@@ -151,44 +167,49 @@ const SalidasInsumos: React.FC = () => {
               <div className="flex items-center">
                 <button
                   onClick={decrementarCantidad}
-                  className="bg-[#4B6ABB] text-white hover:bg-[#213977] p-2 rounded-md w-8 h-8 flex items-center justify-center cursor-pointer transition duration-200 ease-in-out"
+                  disabled={cantidadSeleccionada <= 1}
+                  className="bg-[#4B6ABB] text-white hover:bg-[#213977] p-2 rounded-md w-8 h-8 flex items-center justify-center cursor-pointer transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Minus />
                 </button>
                 <input
                   type="number"
                   value={cantidadSeleccionada}
-                  onChange={(e) =>
-                    setCantidadSeleccionada(parseInt(e.target.value) || 1)
-                  }
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 1;
+                    if (insumoSeleccionado.cantidadDisponible !== undefined && 
+                        value > insumoSeleccionado.cantidadDisponible) {
+                      setCantidadSeleccionada(insumoSeleccionado.cantidadDisponible);
+                    } else {
+                      setCantidadSeleccionada(value);
+                    }
+                  }}
+                  min={1}
+                  max={insumoSeleccionado.cantidadDisponible}
                   className="mx-2 w-16 text-center border border-gray-300 rounded-md py-2"
                 />
                 <button
                   onClick={incrementarCantidad}
-                  className="bg-[#4B6ABB] text-white hover:bg-[#213977] p-2 rounded-md w-8 h-8 flex items-center justify-center cursor-pointer transition duration-200 ease-in-out"
+                  disabled={insumoSeleccionado.cantidadDisponible !== undefined && 
+                          cantidadSeleccionada >= insumoSeleccionado.cantidadDisponible}
+                  className="bg-[#4B6ABB] text-white hover:bg-[#213977] p-2 rounded-md w-8 h-8 flex items-center justify-center cursor-pointer transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Plus 
-                    color="#fff"  
-                  />
+                  <Plus color="#fff" />
                 </button>
               </div>
             </div>
 
             <div>
-                <button
+              <button
                 onClick={agregarInsumo}
                 className="bg-[#4B6ABB] hover:bg-[#213977] text-white px-4 py-2 rounded-md flex items-center gap-2 cursor-pointer transition duration-200 ease-in-out mt-4"
-                >
-                <Plus 
-                  size={18}
-                />
+              >
+                <Plus size={18} />
                 Agregar Insumo
-                </button>
+              </button>
             </div>
           </div>
         )}
-
-        
       </div>
 
       <div className="flex flex-col w-1/2">
@@ -215,9 +236,7 @@ const SalidasInsumos: React.FC = () => {
                     }
                     className="text-gray-500 hover:text-gray-700 cursor-pointer transition duration-200 ease-in-out"
                   >
-                    <Minus 
-                      size={16}
-                    />
+                    <Minus size={16} />
                   </button>
                   <span>{insumo.cantidad}</span>
                   <button
@@ -226,17 +245,13 @@ const SalidasInsumos: React.FC = () => {
                     }
                     className="text-gray-500 hover:text-gray-700 cursor-pointer transition duration-200 ease-in-out"
                   >
-                    <Plus 
-                      size={16}
-                    />
+                    <Plus size={16} />
                   </button>
                   <button
                     onClick={() => eliminarInsumo(insumo.id)}
                     className="text-red-500 hover:text-red-700 ml-2 cursor-pointer transition duration-200 ease-in-out"
                   >
-                    <Trash2 
-                      size={18}
-                    />
+                    <Trash2 size={18} />
                   </button>
                 </div>
               </div>
@@ -248,9 +263,13 @@ const SalidasInsumos: React.FC = () => {
           </div>
         )}
         <div className="mt-auto flex justify-end">
-            <button className="bg-[#213977] hover:bg-blue-900 text-white px-6 py-3 rounded-md font-medium cursor-pointer transition duration-200 ease-in-out">
-            Finalizar Registro
-            </button>
+          <button 
+            onClick={finalizarRegistro}
+            disabled={isProcessing || insumosSalida.length === 0}
+            className="bg-[#213977] hover:bg-blue-900 text-white px-6 py-3 rounded-md font-medium cursor-pointer transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isProcessing ? 'Procesando...' : 'Finalizar Registro'}
+          </button>
         </div>
       </div>
     </div>

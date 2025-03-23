@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -66,5 +67,16 @@ public class InsumoService {
         return insumoMapper.toResponse(insumo);
     }
 
+    public List<InsumoResponse> findByName(String name) {
+        List<Insumo> insumos = insumoRepository.findByNombreContainingIgnoreCase(name);
+
+        if (insumos.isEmpty()) {
+            throw new EntityNotFoundException("No Insumos found with name containing: " + name);
+        }
+
+        return insumos.stream()
+                .map(insumoMapper::toResponse)
+                .toList();
+    }
 
 }

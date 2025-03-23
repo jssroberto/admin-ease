@@ -1,6 +1,6 @@
-import { JSX, useState } from 'react';
 import { Home, Package, LogOut, ShoppingCart, FileText } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { JSX } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface LinkItem {
   name: string;
@@ -9,7 +9,7 @@ interface LinkItem {
 }
 
 const Sidebar: React.FC = () => {
-  const [active, setActive] = useState<string>('Inicio');
+  const location = useLocation();
 
   const links: LinkItem[] = [
     { name: 'Inicio', icon: <Home size={20} />, path: '/' },
@@ -21,15 +21,14 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="w-auto min-h-screen bg-white shadow-md pl-2 pr-2 border-r border-gray-200">
+    <div className="w-auto h-full bg-white shadow-md pl-2 pr-2 border-r border-gray-200">
       <nav className="mt-6">
         {links.map((link) => (
           <Link
             to={link.path}
             key={link.name}
-            onClick={() => setActive(link.name)}
             className={`flex items-center gap-4 px-4 py-3 cursor-pointer rounded-lg ${
-              active === link.name
+              location.pathname === link.path
                 ? 'bg-blue-900 text-white'
                 : 'text-black hover:bg-gray-100'
             } mb-1`}

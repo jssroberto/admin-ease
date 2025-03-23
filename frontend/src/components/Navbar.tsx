@@ -1,6 +1,7 @@
+import { JSX } from "react";
 import Avatar from "./Avatar";
 
-function Navbar() {
+function Navbar(): JSX.Element {
   const currentDate: Date = new Date();
   const formattedDate: string = currentDate.toLocaleString("es-ES", {
     weekday: "long",

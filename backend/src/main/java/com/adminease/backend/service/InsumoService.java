@@ -67,7 +67,7 @@ public class InsumoService {
         return insumoMapper.toResponse(insumo);
     }
 
-    public List<InsumoResponse> findByName(String name) {
+    public List<InsumoResponse> findByNameContainingIgnoreCase(String name) {
         List<Insumo> insumos = insumoRepository.findByNombreContainingIgnoreCase(name);
 
         if (insumos.isEmpty()) {

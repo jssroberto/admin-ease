@@ -3,6 +3,7 @@ package com.adminease.backend.api.dto.request;
 import com.adminease.backend.service.dto.SalidaInsumoDto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,8 @@ public class SalidaRequest {
     @NotNull
     private Long usuarioId;
 
-    @NotEmpty
+    @NotNull
+    @Size(min = 1)
     private List<SalidaInsumoRequest> salidaInsumoRequests;
 
 }

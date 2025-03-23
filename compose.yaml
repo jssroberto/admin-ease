@@ -1,10 +1,12 @@
 services:
 
-  backend_app:
+  backend:
     build: ./backend
     container_name: spring_boot_container
     ports:
       - "8080:8080"
+    volumes:
+      - maven-cache:/root/.m2
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
@@ -45,7 +47,7 @@ services:
       database:
         condition: service_healthy
 
-  frontend_app:
+  frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
@@ -58,8 +60,10 @@ services:
     environment:
       - CHOKIDOKI_USEPOLLING=true
     depends_on:
-      - backend_app
+      - backend
 
 volumes:
   postgres-data:
   pgadmin-data:
+  maven-cache:
+    

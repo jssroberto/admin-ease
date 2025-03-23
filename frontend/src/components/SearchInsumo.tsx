@@ -29,7 +29,7 @@ const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8080/insumo`, {
+      const response = await axios.get(`http://localhost:8080/api/v1/insumo/search`, {
         params: { query: term }
       });
 

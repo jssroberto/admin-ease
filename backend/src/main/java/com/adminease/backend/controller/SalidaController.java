@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/salida")
 @RequiredArgsConstructor
 @Tag(name = "Salida", description = "Operations related to Salida")
+@CrossOrigin(origins = "*")
 public class SalidaController {
 
     private final SalidaService salidaService;

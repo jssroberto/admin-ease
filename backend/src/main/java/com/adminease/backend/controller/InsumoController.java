@@ -23,10 +23,10 @@ public class InsumoController {
 
     private final InsumoService insumoService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/search")
     @Operation(
             summary = "Search Insumos",
-            description = "Search Insumos by name ignoring case"
+            description = "Search Insumos by name containing the query string"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Insumos found successfully",
@@ -36,10 +36,11 @@ public class InsumoController {
     })
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<List<InsumoResponse>> searchInsumos(@RequestParam String query) {
-        List<InsumoResponse> responses = insumoService.findByName(query);
+        List<InsumoResponse> responses = insumoService.findByNameContainingIgnoreCase(query);
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/{id}")
     public ResponseEntity<InsumoResponse> getInsumoById(@PathVariable Long id) {
         InsumoResponse response = insumoService.findById(id);
         return ResponseEntity.ok(response);

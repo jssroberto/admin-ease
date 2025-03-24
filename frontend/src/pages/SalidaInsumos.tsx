@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ScanBarcode, Minus, Plus, Trash, Trash2 } from "lucide-react";
 import {
@@ -23,9 +23,6 @@ interface Insumo {
 const SalidasInsumos: React.FC = () => {
   // Estado para el area
   const [areaSeleccionada, setAreaSeleccionada] = useState<string>("Cocina");
-
-  // Estado para la busqueda
-  const [terminoBusqueda, setTerminoBusqueda] = useState<string>("");
 
   // Estado para el insumo seleccionado
   const [insumoSeleccionado, setInsumoSeleccionado] = useState<Insumo | null>(
@@ -54,20 +51,27 @@ const SalidasInsumos: React.FC = () => {
     setCantidadSeleccionada(1);
   };
 
+  // useEffect para imprimir lista d einsumos cada vez q se modifica
+  useEffect(() => {
+    console.log("Insumos de salida actualizados (uE):", insumosSalida);
+  }, [insumosSalida]);
+
   // Funcion para cambiar la cantidad de un insumo
   const cambiarCantidad = (id: string, nuevaCantidad: number) => {
-    setInsumosSalida((prevInsumos) =>
-      prevInsumos.map((insumo) =>
+    setInsumosSalida((prevInsumos) => {
+      const updatedInsumos = prevInsumos.map((insumo) =>
         insumo.id === id ? { ...insumo, cantidad: nuevaCantidad } : insumo
-      )
-    );
+      );
+      return updatedInsumos;
+    });
   };
 
   // Funcion para eliminar un insumo de la tabla
   const eliminarInsumo = (id: string) => {
-    setInsumosSalida((prevInsumos) =>
-      prevInsumos.filter((insumo) => insumo.id !== id)
-    );
+    setInsumosSalida((prevInsumos) => {
+      const updatedInsumos = prevInsumos.filter((insumo) => insumo.id !== id);
+      return updatedInsumos;
+    });
   };
 
   // Funcion para agregar un insumo a la tabla
@@ -93,13 +97,18 @@ const SalidasInsumos: React.FC = () => {
       if (insumoExistente) {
         cambiarCantidad(insumoSeleccionado.id, nuevaCantidad);
       } else {
-        setInsumosSalida([
-          ...insumosSalida,
-          {
-            ...insumoSeleccionado,
-            cantidad: cantidadSeleccionada,
-          },
-        ]);
+        setInsumosSalida((prevInsumos) => {
+          const updatedInsumos = [
+            ...prevInsumos,
+            {
+              ...insumoSeleccionado,
+              cantidad: cantidadSeleccionada,
+              area: areaSeleccionada,
+            },
+          ];
+
+          return updatedInsumos;
+        });
       }
 
       setInsumoSeleccionado(null);
@@ -125,15 +134,18 @@ const SalidasInsumos: React.FC = () => {
 
     setIsProcessing(true);
     try {
-      const salidas = insumosSalida.map((insumo) => ({
-        insumoId: parseInt(insumo.id),
-        cantidad: insumo.cantidad,
-        area: areaSeleccionada,
-        fecha: new Date().toISOString(),
-      }));
-
-      await axios.post("/api/salidas", salidas);
-      alert("Salidas de insumos registradas correctamente");
+      const payload = {
+        areaId: 1, // Hardcoded
+        usuarioId: 1, // Hardcoded
+        salidaInsumoRequests: insumosSalida.map((insumo) => ({
+          insumoId: parseInt(insumo.id),
+          cantidad: insumo.cantidad,
+        })),
+      };
+    
+      await axios.post("http://localhost:8080/api/v1/salida", payload);
+    
+      setInfoMessage("Salida de insumos registrada correctamente");
       setInsumosSalida([]);
     } catch (error) {
       console.error("Error al registrar salidas:", error);
@@ -154,8 +166,8 @@ const SalidasInsumos: React.FC = () => {
       )}
       {infoMessage && (
         <MessageAlert
-          message={errorMessage || ""}
-          onClose={() => setErrorMessage(null)}
+          message={infoMessage || ""} 
+          onClose={() => setInfoMessage(null)}
         />
       )}
 

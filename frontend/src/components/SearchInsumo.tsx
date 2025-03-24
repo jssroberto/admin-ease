@@ -15,12 +15,15 @@ interface SearchInsumoProps {
 }
 
 const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [results, setResults] = useState<Insumo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showResults, setShowResults] = useState<boolean>(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
+
+  // Busqueda de insumo en la API
   const searchInsumos = async (term: string) => {
     if (!term.trim()) {
       setResults([]);
@@ -40,7 +43,7 @@ const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
           id: item.id.toString(),
           nombre: item.nombre,
           cantidad: 1,
-          cantidadDisponible: item.cantidadDisponible,
+          cantidadDisponible: item.stock,
           unidad: item.unidad
         }));
         setResults(formattedResults);
@@ -56,6 +59,7 @@ const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
     }
   };
 
+  // Timeout en la busqueda
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (searchTerm) {
@@ -68,6 +72,7 @@ const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
     return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
+  // Cerrar la busqueda cuando se haga click fuera del componente
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -81,16 +86,19 @@ const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
     };
   }, []);
 
+  // Seleccionar un insumo de la lista
   const handleSelectInsumo = (insumo: Insumo) => {
     onSelectInsumo(insumo);
     setSearchTerm("");
     setShowResults(false);
   };
 
+  // Funcionalidad de escaneo (NOT YET IMPLEMENTED)
   const handleScan = () => {
     alert("Funcionalidad de escaneo pendiente de implementar");
   };
 
+  // interfaz grafica
   return (
     <div className="mb-6" ref={searchRef}>
       <label className="block text-sm font-normal text-gray-600 mb-1">

@@ -9,6 +9,8 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import SearchInsumo from "@/components/SearchInsumo";
+import ErrorAlert from "@/components/ErrorAlert";
+import MessageAlert from "@/components/MessageAlert";
 
 interface Insumo {
   id: string;
@@ -19,7 +21,6 @@ interface Insumo {
 }
 
 const SalidasInsumos: React.FC = () => {
-
   // Estado para el area
   const [areaSeleccionada, setAreaSeleccionada] = useState<string>("Cocina");
 
@@ -27,22 +28,33 @@ const SalidasInsumos: React.FC = () => {
   const [terminoBusqueda, setTerminoBusqueda] = useState<string>("");
 
   // Estado para el insumo seleccionado
-  const [insumoSeleccionado, setInsumoSeleccionado] = useState<Insumo | null>(null);
+  const [insumoSeleccionado, setInsumoSeleccionado] = useState<Insumo | null>(
+    null
+  );
 
+  // Estado para la cantidad seleccionada
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState<number>(10);
 
+  // Estado para los insumos de salida
   const [insumosSalida, setInsumosSalida] = useState<Insumo[]>([]);
 
+  // Estado para definir si se esta procesando
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
+  //Estado para los errores y mensajes
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+
+  // Funcion para manejar la seleccion de insumo
   const handleInsumoSelect = (insumo: Insumo) => {
     setInsumoSeleccionado({
       ...insumo,
-      cantidad: 1 // Inicializar con cantidad 1
+      cantidad: 1, // Inicializar con cantidad 1
     });
     setCantidadSeleccionada(1);
   };
 
+  // Funcion para cambiar la cantidad de un insumo
   const cambiarCantidad = (id: string, nuevaCantidad: number) => {
     setInsumosSalida((prevInsumos) =>
       prevInsumos.map((insumo) =>
@@ -51,20 +63,35 @@ const SalidasInsumos: React.FC = () => {
     );
   };
 
+  // Funcion para eliminar un insumo de la tabla
   const eliminarInsumo = (id: string) => {
     setInsumosSalida((prevInsumos) =>
       prevInsumos.filter((insumo) => insumo.id !== id)
     );
   };
 
+  // Funcion para agregar un insumo a la tabla
   const agregarInsumo = () => {
     if (insumoSeleccionado) {
       const insumoExistente = insumosSalida.find(
         (i) => i.id === insumoSeleccionado.id
       );
 
+      const nuevaCantidad =
+        (insumoExistente?.cantidad || 0) + cantidadSeleccionada;
+
+      if (
+        insumoSeleccionado.cantidadDisponible !== undefined &&
+        nuevaCantidad > insumoSeleccionado.cantidadDisponible
+      ) {
+        setErrorMessage(
+          `La cantidad total (${nuevaCantidad}) supera el stock disponible (${insumoSeleccionado.cantidadDisponible}).`
+        );
+        return;
+      }
+
       if (insumoExistente) {
-        cambiarCantidad(insumoSeleccionado.id, cantidadSeleccionada);
+        cambiarCantidad(insumoSeleccionado.id, nuevaCantidad);
       } else {
         setInsumosSalida([
           ...insumosSalida,
@@ -92,25 +119,25 @@ const SalidasInsumos: React.FC = () => {
 
   const finalizarRegistro = async () => {
     if (insumosSalida.length === 0) {
-      alert("Debe seleccionar al menos un insumo");
+      setInfoMessage("No hay insumos para registrar");
       return;
     }
 
     setIsProcessing(true);
     try {
-      const salidas = insumosSalida.map(insumo => ({
+      const salidas = insumosSalida.map((insumo) => ({
         insumoId: parseInt(insumo.id),
         cantidad: insumo.cantidad,
         area: areaSeleccionada,
-        fecha: new Date().toISOString()
+        fecha: new Date().toISOString(),
       }));
 
-      await axios.post('/api/salidas', salidas);
-      alert('Salidas de insumos registradas correctamente');
+      await axios.post("/api/salidas", salidas);
+      alert("Salidas de insumos registradas correctamente");
       setInsumosSalida([]);
     } catch (error) {
-      console.error('Error al registrar salidas:', error);
-      alert('Error al registrar las salidas de insumos');
+      console.error("Error al registrar salidas:", error);
+      alert("Error al registrar las salidas de insumos");
     } finally {
       setIsProcessing(false);
     }
@@ -118,6 +145,20 @@ const SalidasInsumos: React.FC = () => {
 
   return (
     <div className="flex h-full p-6">
+      {/* Manejo de errores y mensajes */}
+      {errorMessage && (
+        <ErrorAlert
+          message={errorMessage || ""}
+          onClose={() => setErrorMessage(null)}
+        />
+      )}
+      {infoMessage && (
+        <MessageAlert
+          message={errorMessage || ""}
+          onClose={() => setErrorMessage(null)}
+        />
+      )}
+
       {/* left section */}
       <div className="flex flex-col w-1/2 pr-6">
         <h1 className="text-2xl font-medium mb-6">
@@ -128,8 +169,8 @@ const SalidasInsumos: React.FC = () => {
           <label className="block text-sm font-normal text-gray-600 mb-1">
             Área
           </label>
-         
-            <Select onValueChange={(value) => setAreaSeleccionada(value)}>
+
+          <Select onValueChange={(value) => setAreaSeleccionada(value)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder={areaSeleccionada} />
             </SelectTrigger>
@@ -138,13 +179,11 @@ const SalidasInsumos: React.FC = () => {
               <SelectItem value="Almacén">Almacén</SelectItem>
               <SelectItem value="Bar">Bar</SelectItem>
             </SelectContent>
-            </Select>
+          </Select>
         </div>
 
-        
-          {/* nuevo componente */}
-          <SearchInsumo onSelectInsumo={handleInsumoSelect} />
-        
+        {/* nuevo componente */}
+        <SearchInsumo onSelectInsumo={handleInsumoSelect} />
 
         {insumoSeleccionado && (
           <div className="mb-6">
@@ -156,7 +195,8 @@ const SalidasInsumos: React.FC = () => {
                 {insumoSeleccionado.nombre}
               </div>
               <div className="text-sm text-gray-500">
-                {insumoSeleccionado.cantidadDisponible || 0} {insumoSeleccionado.unidad || 'unidades'} disponibles
+                {insumoSeleccionado.cantidadDisponible || 0}{" "}
+                {insumoSeleccionado.unidad || "unidades"} disponibles
               </div>
             </div>
 
@@ -177,9 +217,13 @@ const SalidasInsumos: React.FC = () => {
                   value={cantidadSeleccionada}
                   onChange={(e) => {
                     const value = parseInt(e.target.value) || 1;
-                    if (insumoSeleccionado.cantidadDisponible !== undefined && 
-                        value > insumoSeleccionado.cantidadDisponible) {
-                      setCantidadSeleccionada(insumoSeleccionado.cantidadDisponible);
+                    if (
+                      insumoSeleccionado.cantidadDisponible !== undefined &&
+                      value > insumoSeleccionado.cantidadDisponible
+                    ) {
+                      setCantidadSeleccionada(
+                        insumoSeleccionado.cantidadDisponible
+                      );
                     } else {
                       setCantidadSeleccionada(value);
                     }
@@ -190,8 +234,11 @@ const SalidasInsumos: React.FC = () => {
                 />
                 <button
                   onClick={incrementarCantidad}
-                  disabled={insumoSeleccionado.cantidadDisponible !== undefined && 
-                          cantidadSeleccionada >= insumoSeleccionado.cantidadDisponible}
+                  disabled={
+                    insumoSeleccionado.cantidadDisponible !== undefined &&
+                    cantidadSeleccionada >=
+                      insumoSeleccionado.cantidadDisponible
+                  }
                   className="bg-[#4B6ABB] text-white hover:bg-[#213977] p-2 rounded-md w-8 h-8 flex items-center justify-center cursor-pointer transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus color="#fff" />
@@ -263,12 +310,12 @@ const SalidasInsumos: React.FC = () => {
           </div>
         )}
         <div className="mt-auto flex justify-end">
-          <button 
+          <button
             onClick={finalizarRegistro}
             disabled={isProcessing || insumosSalida.length === 0}
             className="bg-[#213977] hover:bg-blue-900 text-white px-6 py-3 rounded-md font-medium cursor-pointer transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isProcessing ? 'Procesando...' : 'Finalizar Registro'}
+            {isProcessing ? "Procesando..." : "Finalizar Registro"}
           </button>
         </div>
       </div>

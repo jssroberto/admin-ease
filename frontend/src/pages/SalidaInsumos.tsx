@@ -76,14 +76,20 @@ const SalidasInsumos: React.FC = () => {
 
   // Funcion para agregar un insumo a la tabla
   const agregarInsumo = () => {
+    console.log("agregando...");
+    if (cantidadSeleccionada < 1) {
+      setErrorMessage("La cantidad debe ser mayor o igual a 1.");
+      return;
+    }
+  
     if (insumoSeleccionado) {
       const insumoExistente = insumosSalida.find(
         (i) => i.id === insumoSeleccionado.id
       );
-
+  
       const nuevaCantidad =
         (insumoExistente?.cantidad || 0) + cantidadSeleccionada;
-
+  
       if (
         insumoSeleccionado.cantidadDisponible !== undefined &&
         nuevaCantidad > insumoSeleccionado.cantidadDisponible
@@ -93,7 +99,7 @@ const SalidasInsumos: React.FC = () => {
         );
         return;
       }
-
+  
       if (insumoExistente) {
         cambiarCantidad(insumoSeleccionado.id, nuevaCantidad);
       } else {
@@ -106,15 +112,16 @@ const SalidasInsumos: React.FC = () => {
               area: areaSeleccionada,
             },
           ];
-
+  
           return updatedInsumos;
         });
       }
-
+  
       setInsumoSeleccionado(null);
       setCantidadSeleccionada(1);
     }
   };
+  
 
   const decrementarCantidad = () => {
     if (cantidadSeleccionada > 1) {
@@ -228,20 +235,18 @@ const SalidasInsumos: React.FC = () => {
                   type="number"
                   value={cantidadSeleccionada}
                   onChange={(e) => {
-                    const value = parseInt(e.target.value) || 1;
+                    const value = Math.max(1, parseInt(e.target.value) || 1); // Evitar valores negativos
                     if (
-                      insumoSeleccionado.cantidadDisponible !== undefined &&
+                      insumoSeleccionado?.cantidadDisponible !== undefined &&
                       value > insumoSeleccionado.cantidadDisponible
                     ) {
-                      setCantidadSeleccionada(
-                        insumoSeleccionado.cantidadDisponible
-                      );
+                      setCantidadSeleccionada(insumoSeleccionado.cantidadDisponible);
                     } else {
                       setCantidadSeleccionada(value);
                     }
                   }}
-                  min={1}
-                  max={insumoSeleccionado.cantidadDisponible}
+                  min={1} // Evitar valores negativos desde el input
+                  max={insumoSeleccionado?.cantidadDisponible}
                   className="mx-2 w-16 text-center border border-gray-300 rounded-md py-2"
                 />
                 <button

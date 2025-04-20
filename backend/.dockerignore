@@ -1,3 +1,5 @@
+/app/target
+
 # Java
 **/*.class
 **/*.jar

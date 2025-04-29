@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./backend:/app
+      - ./backend:/appT
       - maven_cache:/root/.m2
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${POSTGRES_DB}
@@ -37,20 +37,6 @@ services:
       timeout: 5s
       retries: 5
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin_container
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    depends_on:
-      database:
-        condition: service_healthy
-
   frontend:
     build:
       context: ./frontend
@@ -68,6 +54,5 @@ services:
 
 volumes:
   postgres_data:
-  pgadmin_data:
   maven_cache:
   node_modules:

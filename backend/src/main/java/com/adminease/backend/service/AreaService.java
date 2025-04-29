@@ -1,11 +1,13 @@
 package com.adminease.backend.service;
 
 import com.adminease.backend.api.dto.response.AreaResponse;
+import com.adminease.backend.mapper.AreaMapper;
 import com.adminease.backend.model.Area;
 import com.adminease.backend.repository.AreaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -13,6 +15,8 @@ import java.util.Optional;
 public class AreaService {
 
     private final AreaRepository areaRepository;
+
+    private final AreaMapper areaMapper;
 
     public AreaResponse getAreaById(Long id) {
 
@@ -25,6 +29,18 @@ public class AreaService {
         return new AreaResponse(
                 area.get().getId(),
                 area.get().getNombre());
+    }
+
+    public List<AreaResponse> getAllAreas() {
+        List<Area> areas = areaRepository.findAll();
+
+        if (areas.isEmpty()) {
+            throw new RuntimeException("No areas found");
+        }
+
+        return areas.stream()
+                .map(areaMapper::toResponse)
+                .toList();
     }
 
 }

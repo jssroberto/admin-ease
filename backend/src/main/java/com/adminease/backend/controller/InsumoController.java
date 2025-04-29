@@ -41,8 +41,39 @@ public class InsumoController {
     }
 
     @GetMapping("/{id}")
+    @Operation(
+            summary = "Get Insumo by ID",
+            description = "Retrieves an Insumo by its ID."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Insumo retrieved successfully",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Insumo not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<InsumoResponse> getInsumoById(@PathVariable Long id) {
         InsumoResponse response = insumoService.findById(id);
         return ResponseEntity.ok(response);
     }
+
+
+    @GetMapping
+    @Operation(
+            summary = "Get all Insumos",
+            description = "Retrieves a list of all Insumos in the system."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Insumos retrieved successfully",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Insumos not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<List<InsumoResponse>> getAllInsumos() {
+        List<InsumoResponse> responses = insumoService.getAllInsumos();
+        return ResponseEntity.ok(responses);
+    }
+
+
 }

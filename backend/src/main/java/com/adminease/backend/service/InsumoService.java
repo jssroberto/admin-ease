@@ -79,4 +79,16 @@ public class InsumoService {
                 .toList();
     }
 
+    public List<InsumoResponse> getAllInsumos() {
+
+        List<Insumo> insumos = insumoRepository.findAll();
+
+        if (insumos.isEmpty()) {
+            throw new EntityNotFoundException("No Insumos found");
+        }
+
+        return insumos.stream()
+                .map(insumoMapper::toResponse)
+                .toList();
+    }
 }

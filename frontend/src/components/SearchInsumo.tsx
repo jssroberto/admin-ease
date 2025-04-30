@@ -52,7 +52,7 @@ const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
         setResults([]);
       }
     } catch (error) {
-      console.error("Error al buscar insumos:", error);
+      //console.error("Error al buscar insumos:", error);
       setResults([]);
     } finally {
       setLoading(false);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ScanBarcode, Minus, Plus, Trash, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -20,25 +20,20 @@ interface Insumo {
   unidad?: string;
 }
 
-const SalidasInsumos: React.FC = () => {
-  // Estado para el area
-  const [areaSeleccionada, setAreaSeleccionada] = useState<string>("Cocina");
+interface Area {
+  id: number;
+  nombre: string;
+}
 
-  // Estado para el insumo seleccionado
+const SalidasInsumos: React.FC = () => {
+  const [areas, setAreas] = useState<Area[]>([]);
+  const [areaSeleccionada, setAreaSeleccionada] = useState<Area | null>(null);
   const [insumoSeleccionado, setInsumoSeleccionado] = useState<Insumo | null>(
     null
   );
-
-  // Estado para la cantidad seleccionada
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState<number>(10);
-
-  // Estado para los insumos de salida
   const [insumosSalida, setInsumosSalida] = useState<Insumo[]>([]);
-
-  // Estado para definir si se esta procesando
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
-
-  //Estado para los errores y mensajes
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
@@ -50,6 +45,18 @@ const SalidasInsumos: React.FC = () => {
     });
     setCantidadSeleccionada(1);
   };
+
+  // useEffect para cargar areas
+  useEffect(() => {
+    axios
+      .get<Area[]>("http://localhost:8080/api/v1/area")
+      .then((response) => {
+        setAreas(response.data);
+      })
+      .catch((error) => {
+        console.error("Error cargando areas", error);
+      });
+  }, []);
 
   // useEffect para imprimir lista d einsumos cada vez q se modifica
   useEffect(() => {
@@ -81,15 +88,15 @@ const SalidasInsumos: React.FC = () => {
       setErrorMessage("La cantidad debe ser mayor o igual a 1.");
       return;
     }
-  
+
     if (insumoSeleccionado) {
       const insumoExistente = insumosSalida.find(
         (i) => i.id === insumoSeleccionado.id
       );
-  
+
       const nuevaCantidad =
         (insumoExistente?.cantidad || 0) + cantidadSeleccionada;
-  
+
       if (
         insumoSeleccionado.cantidadDisponible !== undefined &&
         nuevaCantidad > insumoSeleccionado.cantidadDisponible
@@ -99,7 +106,7 @@ const SalidasInsumos: React.FC = () => {
         );
         return;
       }
-  
+
       if (insumoExistente) {
         cambiarCantidad(insumoSeleccionado.id, nuevaCantidad);
       } else {
@@ -112,16 +119,15 @@ const SalidasInsumos: React.FC = () => {
               area: areaSeleccionada,
             },
           ];
-  
+
           return updatedInsumos;
         });
       }
-  
+
       setInsumoSeleccionado(null);
       setCantidadSeleccionada(1);
     }
   };
-  
 
   const decrementarCantidad = () => {
     if (cantidadSeleccionada > 1) {
@@ -142,16 +148,18 @@ const SalidasInsumos: React.FC = () => {
     setIsProcessing(true);
     try {
       const payload = {
-        areaId: 1, // Hardcoded
+        areaId: areaSeleccionada?.id,
         usuarioId: 1, // Hardcoded
         salidaInsumoRequests: insumosSalida.map((insumo) => ({
           insumoId: parseInt(insumo.id),
           cantidad: insumo.cantidad,
         })),
       };
-    
+
+      console.log("Enviando payload", payload)
+
       await axios.post("http://localhost:8080/api/v1/salida", payload);
-    
+
       setInfoMessage("Salida de insumos registrada correctamente");
       setInsumosSalida([]);
     } catch (error) {
@@ -173,7 +181,7 @@ const SalidasInsumos: React.FC = () => {
       )}
       {infoMessage && (
         <MessageAlert
-          message={infoMessage || ""} 
+          message={infoMessage || ""}
           onClose={() => setInfoMessage(null)}
         />
       )}
@@ -189,14 +197,21 @@ const SalidasInsumos: React.FC = () => {
             Área
           </label>
 
-          <Select onValueChange={(value) => setAreaSeleccionada(value)}>
+          <Select
+            onValueChange={(value) => {
+              const selected = areas.find((area) => area.nombre === value);
+              if (selected) setAreaSeleccionada(selected);
+            }}
+          >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={areaSeleccionada} />
+              <SelectValue placeholder={areaSeleccionada?.nombre} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Cocina">Cocina</SelectItem>
-              <SelectItem value="Almacén">Almacén</SelectItem>
-              <SelectItem value="Bar">Bar</SelectItem>
+              {areas.map((area) => (
+                <SelectItem key={area.id} value={area.nombre}>
+                  {area.nombre}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -240,7 +255,9 @@ const SalidasInsumos: React.FC = () => {
                       insumoSeleccionado?.cantidadDisponible !== undefined &&
                       value > insumoSeleccionado.cantidadDisponible
                     ) {
-                      setCantidadSeleccionada(insumoSeleccionado.cantidadDisponible);
+                      setCantidadSeleccionada(
+                        insumoSeleccionado.cantidadDisponible
+                      );
                     } else {
                       setCantidadSeleccionada(value);
                     }

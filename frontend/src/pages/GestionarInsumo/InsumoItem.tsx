@@ -1,3 +1,4 @@
+import { Pen, Trash } from 'lucide-react';
 import React from 'react';
 
 interface InsumoItemProps {
@@ -43,18 +44,22 @@ const InsumoItem: React.FC<InsumoItemProps> = ({
             e.stopPropagation();
             onEdit?.();
           }}
-          className="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors text-sm"
+          className="p-2 flex justify-between align-middle bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors text-sm cursor-pointer"
         >
-          Editar
+          <Pen
+            size={16}
+          />
         </button>
         <button 
           onClick={(e) => {
             e.stopPropagation();
             onRemove?.();
           }}
-          className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm"
+          className="p-2 flex justify-between align-middle bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors text-sm cursor-pointer"
         >
-          Eliminar
+          <Trash
+            size={16}
+          />
         </button>
       </div>
     </div>

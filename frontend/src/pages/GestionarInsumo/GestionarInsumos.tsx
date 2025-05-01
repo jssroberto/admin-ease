@@ -43,9 +43,9 @@ const GestionarInsumos: React.FC = () => {
             onChange={setSearchTerm}
           />
         </div>
-        <button className="ml-4 px-4 py-2 bg-[#213977] text-white rounded hover:bg-bg-[#213977] cursor-pointer">
+        <a href="/gestionar-insumos/crear" className="ml-4 px-4 py-2 bg-[#213977] text-white rounded hover:bg-[#213977] cursor-pointer">
           Nuevo insumo
-        </button>
+        </a>
       </div>
 
       <div>

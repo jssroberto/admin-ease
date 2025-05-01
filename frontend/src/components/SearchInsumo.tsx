@@ -1,14 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ScanBarcode } from "lucide-react";
 import axios from "axios";
-
-interface Insumo {
-  id: string;
-  nombre: string;
-  cantidad: number;
-  cantidadDisponible?: number;
-  unidad?: string;
-}
+import { Insumo } from "@/types/types";
 
 interface SearchInsumoProps {
   onSelectInsumo: (insumo: Insumo) => void;
@@ -39,10 +32,12 @@ const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
       console.log("API Response:", response);
 
       if (Array.isArray(response.data)) {
-        const formattedResults = response.data.map(item => ({
+        const formattedResults: Insumo[] = response.data.map(item => ({
           id: item.id.toString(),
+          codigo: item.codigo || '', 
           nombre: item.nombre,
           cantidad: 1,
+          categoria: item.categoria || '', 
           cantidadDisponible: item.stock,
           unidad: item.unidad
         }));
@@ -145,7 +140,7 @@ const SearchInsumo: React.FC<SearchInsumoProps> = ({ onSelectInsumo }) => {
                     <div className="flex justify-between">
                       <span className="font-medium">{insumo.nombre}</span>
                       <span className="text-sm text-gray-500">
-                        {insumo.cantidadDisponible} {insumo.unidad}
+                        {insumo.stock} {insumo.unidad}
                       </span>
                     </div>
                   </li>

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Inicio from "./pages/Inicio";
-import GestionarInsumos from "./pages/GestionarInsumos";
+import GestionarInsumos from "./pages/GestionarInsumo/GestionarInsumos";
 import SalidasInsumos from "./pages/SalidaInsumos";
 import CompraInsumos from "./pages/CompraInsumos";
 import ReporteInventario from "./pages/ReporteInventario";

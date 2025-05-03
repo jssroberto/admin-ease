@@ -1,4 +1,4 @@
-package com.adminease.backend.service.dto;
+package com.adminease.backend.api.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -11,18 +11,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InsumosProductoDto {
+public class CompraInsumoRequest {
 
-    private Long id;
+    @NotNull
+    private Long insumoId;
 
     @NotNull
     @Positive
     private Double cantidad;
 
     @NotNull
-    private Long insumoId;
-
-    @NotNull
-    private Long productoId;
-
+    @Positive
+    private Double precioUnitario;
 }

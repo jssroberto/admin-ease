@@ -1,6 +1,8 @@
 package com.adminease.backend.controller;
 
+import com.adminease.backend.api.dto.request.CompraInsumoRequest;
 import com.adminease.backend.api.dto.request.CompraRequest;
+import com.adminease.backend.api.dto.response.CompraInsumoResponse;
 import com.adminease.backend.api.dto.response.CompraResponse;
 import com.adminease.backend.service.CompraService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -75,6 +77,30 @@ public class CompraController {
         CompraResponse created = compraService.createCompra(request);
         URI location = URI.create("/api/v1/compra/" + created.getId());
         return ResponseEntity.created(location).body(created);
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar una compra")
+    public ResponseEntity<CompraResponse> update(
+            @PathVariable Long id,
+            @RequestBody CompraRequest request) {
+        return ResponseEntity.ok(compraService.updateCompra(id, request));
+    }
+
+    @PutMapping("/updateTotal/{id}")
+    @Operation(summary = "Actualizar el total de una compra después de modificar insumos")
+    public ResponseEntity<Void> updateTotal(@PathVariable Long id) {
+        compraService.updateTotalCompra(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar compra por id")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        compraService.deleteCompra(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

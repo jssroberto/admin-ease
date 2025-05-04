@@ -1,7 +1,10 @@
 package com.adminease.backend.service;
 
+import com.adminease.backend.api.dto.request.CompraInsumoRequest;
 import com.adminease.backend.api.dto.request.CompraRequest;
+import com.adminease.backend.api.dto.response.CompraInsumoResponse;
 import com.adminease.backend.api.dto.response.CompraResponse;
+import com.adminease.backend.mapper.CompraInsumoMapper;
 import com.adminease.backend.mapper.CompraMapper;
 import com.adminease.backend.model.Compra;
 import com.adminease.backend.model.CompraInsumo;
@@ -26,6 +29,7 @@ public class CompraService {
     private final ProveedorRepository proveedorRepository;
     private final UsuarioRepository usuarioRepository;
     private final CompraMapper compraMapper;
+    private final CompraInsumoRepository compraInsumoRepository;
     private final CompraInsumoService compraInsumoService;
 
     public List<CompraResponse> getAllCompras() {
@@ -117,19 +121,57 @@ public class CompraService {
         compra.setUsuario(usuario);
         compra.setFecha(ZonedDateTime.now());
 
-        compra = compraRepository.save(compra);
+        compra = compraRepository.save(compra); // Guarda la compra sin insumos
 
-        List<CompraInsumo> compraInsumos =  compraInsumoService.createCompraInsumos(request.getCompraInsumos(), compra);
+        // Obtener entidades reales, no DTOs
+        List<CompraInsumo> compraInsumos = compraInsumoService.createCompraInsumos(request.getCompraInsumos(), compra.getId());
 
         double total = compraInsumos.stream()
                 .mapToDouble(ci -> ci.getCantidad() * ci.getPrecioUnitario())
                 .sum();
 
         compra.setTotal(total);
-        compra.setCompraInsumos(compraInsumos);
+        compra.setCompraInsumos(compraInsumos); // Ahora sí es correcto
+
         compra = compraRepository.save(compra);
 
         return compraMapper.toResponse(compra);
     }
+
+
+    public CompraResponse updateCompra(Long id, CompraRequest request) {
+        compraRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra con ID " + id + " no encontrado"));
+
+        Compra compra = compraMapper.toEntity(request);
+        compra = compraRepository.save(compra);
+
+        return compraMapper.toResponse(compra);
+    }
+
+    public CompraResponse deleteCompra(Long id) {
+       Compra compra = compraRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra no encontrado"));
+
+        compraRepository.deleteById(id);
+
+        return compraMapper.toResponse(compra);
+
+    }
+
+    public void updateTotalCompra(Long compraId) {
+        Compra compra = compraRepository.findById(compraId)
+                .orElseThrow(() -> new EntityNotFoundException("Compra no encontrada"));
+
+        List<CompraInsumo> insumos = compraInsumoRepository.findByCompraId(compraId);
+
+        double total = insumos.stream()
+                .mapToDouble(ci -> ci.getCantidad() * ci.getPrecioUnitario())
+                .sum();
+
+        compra.setTotal(total);
+        compraRepository.save(compra);
+    }
+
 
 }

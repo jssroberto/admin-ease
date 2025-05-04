@@ -15,9 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CompraRequest {
 
-    @NotNull
-    @Positive
-    private Double total;
+
 
     @NotNull
     private ZonedDateTime fecha;

@@ -1,6 +1,8 @@
 package com.adminease.backend.service;
 
 import com.adminease.backend.api.dto.request.CompraInsumoRequest;
+import com.adminease.backend.api.dto.response.CompraInsumoResponse;
+import com.adminease.backend.mapper.CompraInsumoMapper;
 import com.adminease.backend.model.Compra;
 import com.adminease.backend.model.CompraInsumo;
 import com.adminease.backend.model.Insumo;
@@ -19,24 +21,74 @@ import java.util.List;
 public class CompraInsumoService {
 
     private final CompraInsumoRepository compraInsumoRepository;
+    private final CompraRepository compraRepository;
     private final InsumoRepository insumoRepository;
+    private final CompraInsumoMapper compraInsumoMapper;
 
-    public List<CompraInsumo> createCompraInsumos(List<CompraInsumoRequest> insumoRequests, Compra compra) {
-        List<CompraInsumo> compraInsumos = new ArrayList<>();
+    public List<CompraInsumo> createCompraInsumos(List<CompraInsumoRequest> insumoRequests, Long compraId) {
+        Compra compra = compraRepository.findById(compraId)
+                .orElseThrow(() -> new EntityNotFoundException("Compra no encontrada"));
 
-        for (CompraInsumoRequest req : insumoRequests) {
-            Insumo insumo = insumoRepository.findById(req.getInsumoId())
-                    .orElseThrow(() -> new EntityNotFoundException("Insumo  no encontrado"));
+        List<CompraInsumo> result = new ArrayList<>();
+
+        for (CompraInsumoRequest insumoRequest : insumoRequests) {
+            Insumo insumo = insumoRepository.findById(insumoRequest.getInsumoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Insumo con ID " + insumoRequest.getInsumoId() + " no encontrado"));
 
             CompraInsumo compraInsumo = new CompraInsumo();
-            compraInsumo.setInsumo(insumo);
-            compraInsumo.setCantidad(req.getCantidad());
-            compraInsumo.setPrecioUnitario(req.getPrecioUnitario());
             compraInsumo.setCompra(compra);
+            compraInsumo.setInsumo(insumo);
+            compraInsumo.setCantidad(insumoRequest.getCantidad());
+            compraInsumo.setPrecioUnitario(insumoRequest.getPrecioUnitario());
 
-            compraInsumos.add(compraInsumo);
+            compraInsumo = compraInsumoRepository.save(compraInsumo);
+            result.add(compraInsumo);
         }
 
-        return compraInsumoRepository.saveAll(compraInsumos);
+        return result;
     }
+
+
+
+
+    public CompraInsumoResponse getCompraInsumo(Long id) {
+        CompraInsumo compra = compraInsumoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra no encontrado para actualizar"));
+        return compraInsumoMapper.toResponse(compra);
+
+    }
+
+    public CompraInsumoResponse deleteCompraInsumo(Long id) {
+        CompraInsumo compraInsumo = compraInsumoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra no encontrado para actualizar"));
+
+        compraInsumoRepository.delete(compraInsumo);
+
+        return compraInsumoMapper.toResponse(compraInsumo);
+
+    }
+
+    public CompraInsumoResponse updateCompraInsumo(Long id,CompraInsumoRequest compraInsumoRequest) {
+        compraInsumoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra no encontrado para actualizar"));
+
+        CompraInsumo compraInsumo = compraInsumoMapper.toEntity(compraInsumoRequest);
+        compraInsumo = compraInsumoRepository.save(compraInsumo);
+
+        return compraInsumoMapper.toResponse(compraInsumo);
+    }
+
+    public List<CompraInsumoResponse> getCompraInsumoByCompraId(Long id) {
+        if (!compraRepository.existsById(id)) {
+            throw new EntityNotFoundException("Compra no encontrada");
+        }
+
+        List<CompraInsumo> compraInsumos = compraInsumoRepository.findByCompraId(id);
+
+        return compraInsumos.stream()
+                .map(compraInsumoMapper::toResponse)
+                .toList();
+    }
+
 }
+

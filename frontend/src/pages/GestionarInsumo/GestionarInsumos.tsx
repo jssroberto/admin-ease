@@ -9,8 +9,8 @@ const GestionarInsumos: React.FC = () => {
   const [filteredInsumos, setFilteredInsumos] = useState<Insumo[]>(insumos);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // cargar insumos
-  useEffect(() => {
+
+  const fetchInsumos = async () => {
     axios
       .get<Insumo[]>("http://localhost:8080/api/v1/insumo")
       .then((response) => {
@@ -20,6 +20,16 @@ const GestionarInsumos: React.FC = () => {
       .catch((error) => {
         console.error("Error cargando insumos", error);
       });
+  }
+
+  const handleDeleteSuccess = () => {
+    console.log('onSuccessDelete triggered!!!')
+    fetchInsumos();
+  }
+
+  // cargar insumos
+  useEffect(() => {
+    fetchInsumos();
   }, []);
 
   // filtrar por busqueda
@@ -58,6 +68,7 @@ const GestionarInsumos: React.FC = () => {
               nombre={insumo.nombre}
               stock={insumo.stock}
               unidad={insumo.unidad}
+              onDeleteSuccess={handleDeleteSuccess}
             />
           ))
         ) : (

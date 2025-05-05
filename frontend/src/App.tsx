@@ -9,6 +9,7 @@ import CompraInsumos from "./pages/CompraInsumos";
 import ReporteInventario from "./pages/ReporteInventario";
 import ReporteCostos from "./pages/ReporteCostos";
 import CrearInsumo from "./pages/GestionarInsumo/CrearInsumo";
+import EditarInsumo from "./pages/GestionarInsumo/EditarInsumo";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/reporte-inventario" element={<ReporteInventario />} />
             <Route path="/reporte-costos" element={<ReporteCostos />} />
             <Route path="/gestionar-insumos/crear" element={<CrearInsumo />} />
+            <Route path="/gestionar-insumos/editar/:id" element={<EditarInsumo />} />
           </Routes>
         </main>
       </div>

@@ -33,7 +33,7 @@ const EditarInsumo: React.FC = () => {
         const [insumoRes, catRes, uniRes] = await Promise.all([
           axios.get(`http://localhost:8080/api/v1/insumo/${id}`),
           axios.get('http://localhost:8080/api/v1/categoriaInsumo'),
-          axios.get('http://localhost:8080/api/v1/categoriaInsumo')
+          axios.get('http://localhost:8080/api/v1/unidadMedida')
         ]);
 
         setFormData(insumoRes.data);

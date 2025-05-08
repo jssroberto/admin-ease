@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/categoriaInsumo")
 @RequiredArgsConstructor
 @Tag(name = "Categoria Insumo", description = "Operations related to CategoriaInsumo")
-@CrossOrigin(origins = "*")
 public class CategoriaInsumoController {
 
     private final CategoriaInsumoService categoriaInsumoService;

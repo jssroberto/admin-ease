@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("/api/v1/proveedor")
 @RequiredArgsConstructor
 @Tag(name = "Proveedor", description = "Operaciones relacionadas con los proveedores")
-@CrossOrigin(origins = "*")
 public class ProveedorController {
 
     private final ProveedorService proveedorService;

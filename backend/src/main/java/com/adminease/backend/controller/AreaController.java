@@ -18,7 +18,6 @@ import java.util.List;
 @RequestMapping("/api/v1/area")
 @RequiredArgsConstructor
 @Tag(name = "Area", description = "Operations related to Area")
-@CrossOrigin(origins = "*")
 public class AreaController {
 
     private final AreaService areaService;

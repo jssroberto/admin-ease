@@ -18,7 +18,6 @@ import java.util.List;
 @RequestMapping("/api/v1/compra-insumo")
 @RequiredArgsConstructor
 @Tag(name = "Compra de Insumos", description = "Operaciones relacionadas con compras de insumos")
-@CrossOrigin(origins = "*")
 public class CompraInsumoController {
 
     private final CompraInsumoService compraInsumoService;

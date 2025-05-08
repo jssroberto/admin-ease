@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/api/v1/insumo")
 @RequiredArgsConstructor
 @Tag(name = "Insumo", description = "Operations related to Insumo")
-@CrossOrigin(origins = "*")
 public class InsumoController {
 
     private final InsumoService insumoService;

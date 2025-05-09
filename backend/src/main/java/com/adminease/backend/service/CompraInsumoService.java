@@ -24,6 +24,7 @@ public class CompraInsumoService {
     private final CompraRepository compraRepository;
     private final InsumoRepository insumoRepository;
     private final CompraInsumoMapper compraInsumoMapper;
+    private final InsumoService insumoService;
 
     public List<CompraInsumo> createCompraInsumos(List<CompraInsumoRequest> insumoRequests, Long compraId) {
         Compra compra = compraRepository.findById(compraId)
@@ -33,7 +34,8 @@ public class CompraInsumoService {
 
         for (CompraInsumoRequest insumoRequest : insumoRequests) {
             Insumo insumo = insumoRepository.findById(insumoRequest.getInsumoId())
-                    .orElseThrow(() -> new EntityNotFoundException("Insumo con ID " + insumoRequest.getInsumoId() + " no encontrado"));
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Insumo con ID " + insumoRequest.getInsumoId() + " no encontrado"));
 
             CompraInsumo compraInsumo = new CompraInsumo();
             compraInsumo.setCompra(compra);
@@ -43,13 +45,14 @@ public class CompraInsumoService {
 
             compraInsumo = compraInsumoRepository.save(compraInsumo);
             result.add(compraInsumo);
+
+            insumoService.increaseStock(
+                    insumoRequest.getInsumoId(),
+                    insumoRequest.getCantidad());
         }
 
         return result;
     }
-
-
-
 
     public CompraInsumoResponse getCompraInsumo(Long id) {
         CompraInsumo compra = compraInsumoRepository.findById(id)
@@ -68,7 +71,7 @@ public class CompraInsumoService {
 
     }
 
-    public CompraInsumoResponse updateCompraInsumo(Long id,CompraInsumoRequest compraInsumoRequest) {
+    public CompraInsumoResponse updateCompraInsumo(Long id, CompraInsumoRequest compraInsumoRequest) {
         compraInsumoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Compra no encontrado para actualizar"));
 
@@ -91,4 +94,3 @@ public class CompraInsumoService {
     }
 
 }
-

@@ -71,8 +71,13 @@ const CompraInsumos: React.FC = () => {
     );
   };
 
-  // Change price for an insumo
+  // camibiar precio en tabla
   const cambiarPrecio = (id: string, nuevoPrecio: number) => {
+
+    if(nuevoPrecio < 0) {
+      return;
+    } 
+
     setInsumosCompra((prevInsumos) =>
       prevInsumos.map((insumo) =>
         insumo.id === id ? { ...insumo, precioUnitario: nuevoPrecio } : insumo
@@ -80,14 +85,14 @@ const CompraInsumos: React.FC = () => {
     );
   };
 
-  // Remove insumo from list
+  // remover de la tabla
   const eliminarInsumo = (id: string) => {
     setInsumosCompra((prevInsumos) =>
       prevInsumos.filter((insumo) => insumo.id !== id)
     );
   };
 
-  // Add insumo to list
+  // agregfar insumo a la tabla
   const agregarInsumo = () => {
     if (!insumoSeleccionado) return;
 

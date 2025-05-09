@@ -73,11 +73,13 @@ public class CompraService {
                 .toList();
     }
 
-    public List<CompraResponse> findByProveedorIdAndFechaBetween(Long proveedorId, ZonedDateTime fechaInicio, ZonedDateTime fechaFin) {
+    public List<CompraResponse> findByProveedorIdAndFechaBetween(Long proveedorId, ZonedDateTime fechaInicio,
+            ZonedDateTime fechaFin) {
         List<Compra> compras = compraRepository.findByProveedorIdAndFechaBetween(proveedorId, fechaInicio, fechaFin);
 
         if (compras.isEmpty()) {
-            throw new EntityNotFoundException("No se encontraron compras del proveedor con ID " + proveedorId + " en ese rango de fechas");
+            throw new EntityNotFoundException(
+                    "No se encontraron compras del proveedor con ID " + proveedorId + " en ese rango de fechas");
         }
 
         return compras.stream()
@@ -110,34 +112,39 @@ public class CompraService {
     }
 
     public CompraResponse createCompra(CompraRequest request) {
+        // 1. Validate required entities exist
         Proveedor proveedor = proveedorRepository.findById(request.getProveedorId())
-                .orElseThrow(() -> new EntityNotFoundException("Proveedor con ID " + request.getProveedorId() + " no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Proveedor con ID " + request.getProveedorId() + " no encontrado"));
 
         Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuario con ID " + request.getUsuarioId() + " no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Usuario con ID " + request.getUsuarioId() + " no encontrado"));
 
+        // 2. First calculate the total from compraInsumos
+        double total = request.getCompraInsumos().stream()
+                .mapToDouble(ci -> ci.getCantidad() * ci.getPrecioUnitario())
+                .sum();
+
+        // 3. Create and save Compra with all required fields
         Compra compra = compraMapper.toEntity(request);
         compra.setProveedor(proveedor);
         compra.setUsuario(usuario);
         compra.setFecha(ZonedDateTime.now());
+        compra.setTotal(total); // Set total BEFORE saving
 
-        compra = compraRepository.save(compra); // Guarda la compra sin insumos
-
-        // Obtener entidades reales, no DTOs
-        List<CompraInsumo> compraInsumos = compraInsumoService.createCompraInsumos(request.getCompraInsumos(), compra.getId());
-
-        double total = compraInsumos.stream()
-                .mapToDouble(ci -> ci.getCantidad() * ci.getPrecioUnitario())
-                .sum();
-
-        compra.setTotal(total);
-        compra.setCompraInsumos(compraInsumos); // Ahora sí es correcto
-
+        // 4. Save the complete Compra first
         compra = compraRepository.save(compra);
 
+        // 5. Create and associate CompraInsumos
+        List<CompraInsumo> compraInsumos = compraInsumoService.createCompraInsumos(
+                request.getCompraInsumos(),
+                compra.getId());
+        compra.setCompraInsumos(compraInsumos);
+
+        // 6. Return the response
         return compraMapper.toResponse(compra);
     }
-
 
     public CompraResponse updateCompra(Long id, CompraRequest request) {
         compraRepository.findById(id)
@@ -150,7 +157,7 @@ public class CompraService {
     }
 
     public CompraResponse deleteCompra(Long id) {
-       Compra compra = compraRepository.findById(id)
+        Compra compra = compraRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Compra no encontrado"));
 
         compraRepository.deleteById(id);
@@ -172,6 +179,5 @@ public class CompraService {
         compra.setTotal(total);
         compraRepository.save(compra);
     }
-
 
 }

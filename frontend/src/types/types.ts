@@ -8,6 +8,11 @@ export interface Insumo {
     unidad?: string;
   }
 
+  export interface InsumoCompra extends Insumo {
+    precioUnitario: number;
+    cantidadCompra: number;
+}
+
 export interface Area {
   id: number;
   nombre: string;

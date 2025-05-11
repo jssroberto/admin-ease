@@ -6,10 +6,12 @@ import Inicio from "./pages/Inicio";
 import GestionarInsumos from "./pages/GestionarInsumo/GestionarInsumos";
 import SalidasInsumos from "./pages/SalidaInsumos";
 import CompraInsumos from "./pages/CompraInsumos";
-import ReporteInventario from "./pages/ReporteInventario";
+import ReporteInventario from "./pages/ReporteInventario/ReporteInventario";
 import ReporteCostos from "./pages/ReporteCostos";
 import CrearInsumo from "./pages/GestionarInsumo/CrearInsumo";
 import EditarInsumo from "./pages/GestionarInsumo/EditarInsumo";
+import InventarioInsumos from "./pages/ReporteInventario/InventarioInsumos";
+import HistorialMovimientos from "./pages/ReporteInventario/HistorialMovimientos";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
             <Route path="/reporte-costos" element={<ReporteCostos />} />
             <Route path="/gestionar-insumos/crear" element={<CrearInsumo />} />
             <Route path="/gestionar-insumos/editar/:id" element={<EditarInsumo />} />
+            <Route path="/reporte-inventario/insumos" element={<InventarioInsumos />} />
+            <Route path="/reporte-inventario/movimientos" element={<HistorialMovimientos />} />
           </Routes>
         </main>
       </div>

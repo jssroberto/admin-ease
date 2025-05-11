@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/salida")
 @RequiredArgsConstructor
@@ -40,5 +42,21 @@ public class SalidaController {
         return ResponseEntity.
                 status(HttpStatus.CREATED).
                 body(response);
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "Get all Salidas",
+            description = "Retrieves a list of all Salida entries in the system."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Salidas retrieved successfully",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<List<SalidaResponse>> getAllSalidas() {
+        List<SalidaResponse> responses = salidaService.getAllSalidas();
+        return ResponseEntity.ok(responses);
     }
 }

@@ -27,7 +27,7 @@ interface Insumo extends InsumoFromAPI {
   categoriaInsumo?: CategoriaInsumo;
 }
 
-const ReporteInventario: React.FC = () => {
+const InventarioInsumos: React.FC = () => {
   const [insumosFetched, setInsumosFetched] = useState<InsumoFromAPI[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<any[]>([]);
   const [categoriasInsumo, setCategoriasInsumo] = useState<any[]>([]);
@@ -248,4 +248,4 @@ const ReporteInventario: React.FC = () => {
   );
 };
 
-export default ReporteInventario;
+export default InventarioInsumos;

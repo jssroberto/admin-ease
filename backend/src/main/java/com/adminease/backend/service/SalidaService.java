@@ -41,4 +41,15 @@ public class SalidaService {
         return salidaResponse;
     }
 
+    public List<SalidaResponse> getAllSalidas() {
+        List<Salida> salidas = salidaRepository.findAll();
+
+        if (salidas.isEmpty()) {
+            throw new RuntimeException("No se encontraron salidas");
+        }
+
+        return salidas.stream()
+                .map(salidaMapper::toResponse)
+                .toList();
+    }
 }

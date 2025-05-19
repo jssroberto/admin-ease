@@ -74,6 +74,9 @@ const HistorialMovimientos: React.FC = () => {
     proveedorId: "",
   });
 
+  // State for proveedores
+  const [proveedores, setProveedores] = useState<{ id: number; nombre: string }[]>([]);
+
   const fetchSalidas = async () => {
     try {
       setSalidasLoading(true);
@@ -121,9 +124,21 @@ const HistorialMovimientos: React.FC = () => {
     }
   };
 
+  // Fetch proveedores
+  const fetchProveedores = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/proveedor");
+      const data = await response.json();
+      setProveedores(data);
+    } catch (error) {
+      console.error("Error fetching proveedores:", error);
+    }
+  };
+
   useEffect(() => {
     fetchSalidas();
     fetchCompras();
+    fetchProveedores();
   }, [salidasFilter, comprasFilter]);
 
   const formatDate = (dateString: string) => {
@@ -136,11 +151,171 @@ const HistorialMovimientos: React.FC = () => {
     });
   };
 
+  // Filter compras by insumo name (case-insensitive), proveedorId, and date range if present
+  const filteredCompras = compras.filter((compra) => {
+    // Filter by search (insumo name)
+    let matchesSearch = true;
+    if (comprasFilter.search) {
+      const searchLower = comprasFilter.search.toLowerCase();
+      matchesSearch = compra.compraInsumos.some((ci) =>
+        ci.insumo.nombre.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Filter by proveedorId
+    let matchesProveedor = true;
+    if (comprasFilter.proveedorId) {
+      matchesProveedor = String(compra.proveedorNombre.id) === comprasFilter.proveedorId;
+    }
+
+    // Filter by fechaDesde and fechaHasta
+    let matchesFecha = true;
+    if (comprasFilter.fechaDesde) {
+      matchesFecha =
+        matchesFecha &&
+        new Date(compra.fecha) >= new Date(comprasFilter.fechaDesde + "T00:00:00");
+    }
+    if (comprasFilter.fechaHasta) {
+      matchesFecha =
+        matchesFecha &&
+        new Date(compra.fecha) <= new Date(comprasFilter.fechaHasta + "T23:59:59");
+    }
+
+    return matchesSearch && matchesProveedor && matchesFecha;
+  });
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">
         Historial de Movimientos
       </h1>
+
+      {/* Compras Section */}
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">
+          Compras de Insumos
+        </h2>
+
+        {/* Compras Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="date"
+              className="pl-10 pr-4 py-2 border rounded w-full"
+              placeholder="Desde"
+              value={comprasFilter.fechaDesde}
+              onChange={(e) =>
+                setComprasFilter({
+                  ...comprasFilter,
+                  fechaDesde: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="relative">
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="date"
+              className="pl-10 pr-4 py-2 border rounded w-full"
+              placeholder="Hasta"
+              value={comprasFilter.fechaHasta}
+              onChange={(e) =>
+                setComprasFilter({
+                  ...comprasFilter,
+                  fechaHasta: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Buscar insumo o proveedor..."
+              className="pl-10 pr-4 py-2 border rounded w-full"
+              value={comprasFilter.search}
+              onChange={(e) =>
+                setComprasFilter({ ...comprasFilter, search: e.target.value })
+              }
+            />
+          </div>
+          <select
+            className="p-2 border rounded w-full"
+            value={comprasFilter.proveedorId}
+            onChange={(e) =>
+              setComprasFilter({
+                ...comprasFilter,
+                proveedorId: e.target.value,
+              })
+            }
+          >
+            <option value="">Todos los proveedores</option>
+            {proveedores.map((proveedor) => (
+              <option key={proveedor.id} value={proveedor.id}>
+                {proveedor.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Compras Table */}
+        {comprasLoading ? (
+          <div className="text-center py-8">Cargando compras...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fecha
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Proveedor
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Usuario
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Insumos
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredCompras.map((compra) => (
+                  <tr key={`compra-${compra.id}`}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(compra.fecha)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {compra.proveedorNombre.nombre}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {compra.usuarioNombre?.nombre}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {compra.compraInsumos.map((ci) => (
+                        <div key={ci.id}>
+                          {ci.insumo.nombre} ({ci.cantidad} x $
+                          {ci.precioUnitario})
+                        </div>
+                      ))}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      ${compra.total}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* Salidas Section */}
       <div className="mb-12 bg-white p-4 rounded-lg shadow">
@@ -224,7 +399,6 @@ const HistorialMovimientos: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Insumos
                   </th>
-
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -248,131 +422,6 @@ const HistorialMovimientos: React.FC = () => {
                             </div>
                           ))
                         : "No hay insumos"}
-                    </td>
-                    
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* Compras Section */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-          Compras de Insumos
-        </h2>
-
-        {/* Compras Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="date"
-              className="pl-10 pr-4 py-2 border rounded w-full"
-              placeholder="Desde"
-              value={comprasFilter.fechaDesde}
-              onChange={(e) =>
-                setComprasFilter({
-                  ...comprasFilter,
-                  fechaDesde: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="date"
-              className="pl-10 pr-4 py-2 border rounded w-full"
-              placeholder="Hasta"
-              value={comprasFilter.fechaHasta}
-              onChange={(e) =>
-                setComprasFilter({
-                  ...comprasFilter,
-                  fechaHasta: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar insumo o proveedor..."
-              className="pl-10 pr-4 py-2 border rounded w-full"
-              value={comprasFilter.search}
-              onChange={(e) =>
-                setComprasFilter({ ...comprasFilter, search: e.target.value })
-              }
-            />
-          </div>
-          <select
-            className="p-2 border rounded w-full"
-            value={comprasFilter.proveedorId}
-            onChange={(e) =>
-              setComprasFilter({
-                ...comprasFilter,
-                proveedorId: e.target.value,
-              })
-            }
-          >
-            <option value="">Todos los proveedores</option>
-            {/* falta buscar los proveedores */}
-          </select>
-        </div>
-
-        {/* Compras Table */}
-        {comprasLoading ? (
-          <div className="text-center py-8">Cargando compras...</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Fecha
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Proveedor
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Usuario
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Insumos
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total
-                  </th>
-                  
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {compras.map((compra) => (
-                  <tr key={`compra-${compra.id}`}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(compra.fecha)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {compra.proveedorNombre.nombre}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {compra.usuarioNombre?.nombre}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {compra.compraInsumos.map((ci) => (
-                        <div key={ci.id}>
-                          {ci.insumo.nombre} ({ci.cantidad} x $
-                          {ci.precioUnitario})
-                        </div>
-                      ))}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      ${compra.total}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     </td>
                   </tr>
                 ))}

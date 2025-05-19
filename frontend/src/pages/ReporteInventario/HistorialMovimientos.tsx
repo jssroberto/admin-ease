@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Search, Calendar, Download, ArrowUpDown } from "lucide-react";
+import { Search, Calendar } from "lucide-react";
 
 interface Salida {
   id: number;

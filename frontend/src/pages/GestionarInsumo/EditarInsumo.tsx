@@ -16,7 +16,7 @@ const EditarInsumo: React.FC = () => {
   const [formData, setFormData] = useState<InsumoFormData>({
     codigo: '',
     nombre: '',
-    stock: 1,
+    stock: 0,
     unidadMedidaId: 1,
     categoriaInsumoId: 1
   });
@@ -109,7 +109,7 @@ const EditarInsumo: React.FC = () => {
               />
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700">Stock</label>
               <input
                 type="number"
@@ -121,7 +121,7 @@ const EditarInsumo: React.FC = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 required
               />
-            </div>
+            </div> */}
           </div>
 
           <div className="space-y-4">

@@ -249,7 +249,7 @@ const CompraInsumos: React.FC = () => {
               <div className="flex items-center">
                 <button
                   onClick={() =>
-                    setCantidadSeleccionada((prev) => Math.max(1, prev - 1))
+                  setCantidadSeleccionada((prev) => Math.max(1, prev - 1))
                   }
                   disabled={cantidadSeleccionada <= 1}
                   className="bg-[#4B6ABB] text-white hover:bg-[#213977] p-2 rounded-md w-8 h-8 flex items-center justify-center cursor-pointer transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
@@ -258,14 +258,23 @@ const CompraInsumos: React.FC = () => {
                 </button>
                 <input
                   type="number"
-                  value={cantidadSeleccionada}
-                  onChange={(e) =>
-                    setCantidadSeleccionada(
-                      Math.max(1, parseInt(e.target.value) || 1)
-                    )
+                  value={cantidadSeleccionada === 0 ? "" : cantidadSeleccionada}
+                  onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "") {
+                    setCantidadSeleccionada(0);
+                  } else {
+                    const num = parseInt(val, 10);
+                    setCantidadSeleccionada(isNaN(num) ? 1 : Math.max(1, num));
                   }
+                  }}
+                  onBlur={() => {
+                  if (cantidadSeleccionada < 1) setCantidadSeleccionada(1);
+                  }}
                   min={1}
                   className="mx-2 w-16 text-center border border-gray-300 rounded-md py-2"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                 />
                 <button
                   onClick={() => setCantidadSeleccionada((prev) => prev + 1)}
@@ -279,18 +288,29 @@ const CompraInsumos: React.FC = () => {
             {/* price input */}
             <div className="mb-4">
               <label className="block text-sm font-normal text-gray-600 mb-1">
-                Precio Unitario
+              Precio de Compra
               </label>
               <input
-                type="number"
-                value={precioUnitario}
-                onChange={(e) =>
-                  setPrecioUnitario(parseFloat(e.target.value) || 0)
+              type="number"
+              value={precioUnitario === 0 ? "" : precioUnitario}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "") {
+                setPrecioUnitario(0);
+                } else {
+                const num = parseFloat(val);
+                setPrecioUnitario(isNaN(num) ? 0 : Math.max(0, num));
                 }
-                min="0"
-                step="0.01"
-                className="w-full border border-gray-300 rounded-md py-2 px-3"
-                placeholder="0.00"
+              }}
+              onBlur={() => {
+                if (precioUnitario < 0) setPrecioUnitario(0);
+              }}
+              min={0}
+              step="0.01"
+              className="w-24 text-center border border-gray-300 rounded-md py-2"
+              inputMode="decimal"
+              pattern="[0-9]*"
+              placeholder="0.00"
               />
             </div>
 
@@ -314,7 +334,7 @@ const CompraInsumos: React.FC = () => {
               <div className="col-span-5 font-medium">Insumo</div>
               <div className="col-span-2 text-center font-medium">Cantidad</div>
               <div className="col-span-3 text-center font-medium">
-                Precio Unit.
+                Precio de Compra
               </div>
               <div className="col-span-2"></div>
             </div>

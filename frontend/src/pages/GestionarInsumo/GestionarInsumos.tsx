@@ -2,6 +2,7 @@ import SearchBar from "@/components/ui/Searchbar";
 import { Insumo } from "@/types/types";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import InsumoItem from "./InsumoItem";
 
 const GestionarInsumos: React.FC = () => {
@@ -9,23 +10,22 @@ const GestionarInsumos: React.FC = () => {
   const [filteredInsumos, setFilteredInsumos] = useState<Insumo[]>(insumos);
   const [searchTerm, setSearchTerm] = useState("");
 
-
   const fetchInsumos = async () => {
     axios
       .get<Insumo[]>("http://localhost:8080/api/v1/insumo")
       .then((response) => {
         setInsumos(response.data);
-        console.log(response.data)
+        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error cargando insumos", error);
       });
-  }
+  };
 
   const handleDeleteSuccess = () => {
-    console.log('onSuccessDelete triggered!!!')
+    console.log("onSuccessDelete triggered!!!");
     fetchInsumos();
-  }
+  };
 
   // cargar insumos
   useEffect(() => {
@@ -53,9 +53,14 @@ const GestionarInsumos: React.FC = () => {
             onChange={setSearchTerm}
           />
         </div>
-        <a href="/gestionar-insumos/crear" className="ml-4 px-4 py-2 bg-[#213977] text-white rounded hover:bg-[#213977] cursor-pointer">
+        <Link
+          to="/gestionar-insumos/crear"
+          className="ml-4 px-4 py-2 bg-[#213977] text-white rounded hover:bg-[#213977] cursor-pointer"
+        >
+          {" "}
+          {/* Changed a to Link and href to to */}
           Nuevo insumo
-        </a>
+        </Link>
       </div>
 
       <div>

@@ -24,12 +24,12 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
             
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-1 text-sm">Correo electrónico</label>
+            <label className="block text-gray-700 mb-1 text-sm">ID de usuario</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M2 6.5A2.5 2.5 0 014.5 4h15A2.5 2.5 0 0122 6.5v11A2.5 2.5 0 0119.5 20h-15A2.5 2.5 0 012 17.5v-11z" stroke="#A0AEC0" strokeWidth="1.5"/><path d="M22 6.5l-10 7-10-7" stroke="#A0AEC0" strokeWidth="1.5"/></svg>
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#A0AEC0" strokeWidth="1.5"/><path d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" stroke="#A0AEC0" strokeWidth="1.5"/></svg>
               </span>
-              <input type="email" className="w-full pl-10 pr-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300 text-sm" placeholder="Correo electrónico" required />
+              <input type="text" className="w-full pl-10 pr-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300 text-sm" placeholder="ID de usuario" required />
             </div>
           </div>
           <div className="mb-2">

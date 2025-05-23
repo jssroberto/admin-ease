@@ -80,16 +80,9 @@ const HistorialMovimientos: React.FC = () => {
   const fetchSalidas = async () => {
     try {
       setSalidasLoading(true);
-      const params = new URLSearchParams();
-      if (salidasFilter.fechaDesde)
-        params.append("fechaDesde", salidasFilter.fechaDesde);
-      if (salidasFilter.fechaHasta)
-        params.append("fechaHasta", salidasFilter.fechaHasta);
-      if (salidasFilter.search) params.append("search", salidasFilter.search);
-      if (salidasFilter.areaId) params.append("areaId", salidasFilter.areaId);
-
+      // No params, endpoint es /api/v1/salida
       const response = await fetch(
-        `http://localhost:8080/api/v1/compra?${params.toString()}`
+        `http://localhost:8080/api/v1/salida`
       );
       const data = await response.json();
       setSalidas(data);
@@ -182,6 +175,20 @@ const HistorialMovimientos: React.FC = () => {
     }
 
     return matchesSearch && matchesProveedor && matchesFecha;
+  });
+
+  // Filtrar salidas por fechas
+  const filteredSalidas = salidas.filter((salida) => {
+    let matchesFecha = true;
+    if (salidasFilter.fechaDesde) {
+      matchesFecha = matchesFecha &&
+        new Date(salida.fecha) >= new Date(salidasFilter.fechaDesde + 'T00:00:00');
+    }
+    if (salidasFilter.fechaHasta) {
+      matchesFecha = matchesFecha &&
+        new Date(salida.fecha) <= new Date(salidasFilter.fechaHasta + 'T23:59:59');
+    }
+    return matchesFecha;
   });
 
   return (
@@ -391,34 +398,47 @@ const HistorialMovimientos: React.FC = () => {
                     Fecha
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Área
+                    Área ID
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Usuario
+                    Usuario ID
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Insumos
+                    Cantidades de Insumos
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {salidas.map((salida) => (
+                {filteredSalidas.map((salida) => (
                   <tr key={`salida-${salida.id}`}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(salida.fecha)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {salida.area?.nombre || salida.areaId || "N/A"}
+                      {salida.area?.nombre
+                        ? salida.area.nombre
+                        : salida.areaId === 1
+                        ? 'Cocina'
+                        : salida.areaId === 2
+                        ? 'Bar'
+                        : salida.areaId === 3
+                        ? 'Almacén'
+                        : salida.areaId}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {salida.usuario?.nombre || salida.usuarioId || "N/A"}
+                      {salida.usuarioId === 1
+                        ? 'admin'
+                        : salida.usuarioId === 2
+                        ? 'cajero1'
+                        : salida.usuarioId === 3
+                        ? 'chef1'
+                        : salida.usuarioId}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {salida.salidaInsumos?.length
                         ? salida.salidaInsumos.map((si) => (
                             <div key={si.id}>
-                              {si.insumo?.nombre || "Insumo desconocido"} (
-                              {si.cantidad})
+                              Cantidad: {si.cantidad}
                             </div>
                           ))
                         : "No hay insumos"}

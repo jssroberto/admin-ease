@@ -1,14 +1,12 @@
 package com.adminease.backend.api.dto.response;
 
+import java.time.ZonedDateTime;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Setter
 @Getter
@@ -21,9 +19,13 @@ public class SalidaResponse {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private ZonedDateTime fecha;
 
-    private Long areaId;
+    private Long areaId; // Changed from area
 
-    private Long usuarioId;
+    private String areaNombre; // Changed from areaId
+
+    private Long usuarioId; // Changed from usuario
+
+    private String usuarioNombre; // Changed from usuarioId
 
     private List<SalidaInsumoResponse> salidaInsumos;
 

@@ -67,6 +67,7 @@ const CrearInsumo: React.FC = () => {
   };
 
   return (
+    console.log(formData),
     <div className="flex flex-col max-w-4xl mr-auto p-6">
   <h1 className="text-2xl font-medium mb-6">Crear nuevo insumo</h1>
   

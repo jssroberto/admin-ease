@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Search, Calendar } from "lucide-react";
+import { Calendar, Search } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react"; // Added useCallback
 
 interface Salida {
   id: number;
   fecha: string;
   areaId?: number;
+  areaNombre?: string;
   area?: {
     id: number;
     nombre: string;
   };
   usuarioId?: number;
+  usuarioNombre?: string;
   usuario?: {
     id: number;
     nombre: string;
@@ -17,12 +19,26 @@ interface Salida {
   salidaInsumos?: {
     id: number;
     cantidad: number;
+    insumoId?: number;
+    insumoNombre?: string;
     insumo?: {
       id: number;
       nombre: string;
       codigo: string;
     };
   }[];
+}
+
+interface Area {
+  id: number;
+  nombre: string;
+}
+
+interface RolDTO {
+  // Define a more specific type for RolDTO if possible
+  id: number;
+  nombre: string;
+  // Add other properties of RolDTO if known
 }
 
 interface Compra {
@@ -38,7 +54,7 @@ interface Compra {
   usuarioNombre: {
     id: number;
     nombre: string;
-    rolDTO: any;
+    rolDTO: RolDTO; // Use the defined RolDTO interface
   };
   compraInsumos: {
     id: number;
@@ -75,14 +91,23 @@ const HistorialMovimientos: React.FC = () => {
   });
 
   // State for proveedores
-  const [proveedores, setProveedores] = useState<{ id: number; nombre: string }[]>([]);
+  const [proveedores, setProveedores] = useState<
+    { id: number; nombre: string }[]
+  >([]);
+  // State for areas
+  const [areas, setAreas] = useState<Area[]>([]);
 
-  const fetchSalidas = async () => {
+  const fetchSalidas = useCallback(async () => {
     try {
       setSalidasLoading(true);
-      // No params, endpoint es /api/v1/salida
+      const params = new URLSearchParams();
+      if (salidasFilter.fechaDesde)
+        params.append("fechaDesde", salidasFilter.fechaDesde);
+      if (salidasFilter.fechaHasta)
+        params.append("fechaHasta", salidasFilter.fechaHasta);
+      // Client-side filtering for search and areaId will be applied after fetching
       const response = await fetch(
-        `http://localhost:8080/api/v1/salida`
+        `http://localhost:8080/api/v1/salida?${params.toString()}`
       );
       const data = await response.json();
       setSalidas(data);
@@ -91,9 +116,9 @@ const HistorialMovimientos: React.FC = () => {
     } finally {
       setSalidasLoading(false);
     }
-  };
+  }, [salidasFilter.fechaDesde, salidasFilter.fechaHasta]); // Dependencies for useCallback
 
-  const fetchCompras = async () => {
+  const fetchCompras = useCallback(async () => {
     try {
       setComprasLoading(true);
       const params = new URLSearchParams();
@@ -101,9 +126,7 @@ const HistorialMovimientos: React.FC = () => {
         params.append("fechaDesde", comprasFilter.fechaDesde);
       if (comprasFilter.fechaHasta)
         params.append("fechaHasta", comprasFilter.fechaHasta);
-      if (comprasFilter.search) params.append("search", comprasFilter.search);
-      if (comprasFilter.proveedorId)
-        params.append("proveedorId", comprasFilter.proveedorId);
+      // Search and proveedorId will be filtered client-side
 
       const response = await fetch(
         `http://localhost:8080/api/v1/compra?${params.toString()}`
@@ -115,7 +138,7 @@ const HistorialMovimientos: React.FC = () => {
     } finally {
       setComprasLoading(false);
     }
-  };
+  }, [comprasFilter.fechaDesde, comprasFilter.fechaHasta]); // Dependencies for useCallback
 
   // Fetch proveedores
   const fetchProveedores = async () => {
@@ -128,11 +151,29 @@ const HistorialMovimientos: React.FC = () => {
     }
   };
 
+  // Fetch areas
+  const fetchAreas = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/area");
+      const data = await response.json();
+      setAreas(data);
+    } catch (error) {
+      console.error("Error fetching areas:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProveedores();
+    fetchAreas();
+  }, []); // Fetch static data once on mount
+
   useEffect(() => {
     fetchSalidas();
+  }, [fetchSalidas]); // Refetch salidas when fetchSalidas changes (due to date filters)
+
+  useEffect(() => {
     fetchCompras();
-    fetchProveedores();
-  }, [salidasFilter, comprasFilter]);
+  }, [fetchCompras]); // Refetch compras when fetchCompras changes (due to its filters)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("es-ES", {
@@ -146,19 +187,24 @@ const HistorialMovimientos: React.FC = () => {
 
   // Filter compras by insumo name (case-insensitive), proveedorId, and date range if present
   const filteredCompras = compras.filter((compra) => {
-    // Filter by search (insumo name)
+    // Filter by search (insumo name or proveedor name)
     let matchesSearch = true;
     if (comprasFilter.search) {
       const searchLower = comprasFilter.search.toLowerCase();
-      matchesSearch = compra.compraInsumos.some((ci) =>
+      const searchInInsumos = compra.compraInsumos.some((ci) =>
         ci.insumo.nombre.toLowerCase().includes(searchLower)
       );
+      const searchInProveedor = compra.proveedorNombre.nombre
+        .toLowerCase()
+        .includes(searchLower);
+      matchesSearch = searchInInsumos || searchInProveedor;
     }
 
     // Filter by proveedorId
     let matchesProveedor = true;
     if (comprasFilter.proveedorId) {
-      matchesProveedor = String(compra.proveedorNombre.id) === comprasFilter.proveedorId;
+      matchesProveedor =
+        String(compra.proveedorNombre.id) === comprasFilter.proveedorId;
     }
 
     // Filter by fechaDesde and fechaHasta
@@ -166,29 +212,58 @@ const HistorialMovimientos: React.FC = () => {
     if (comprasFilter.fechaDesde) {
       matchesFecha =
         matchesFecha &&
-        new Date(compra.fecha) >= new Date(comprasFilter.fechaDesde + "T00:00:00");
+        new Date(compra.fecha) >=
+          new Date(comprasFilter.fechaDesde + "T00:00:00");
     }
     if (comprasFilter.fechaHasta) {
       matchesFecha =
         matchesFecha &&
-        new Date(compra.fecha) <= new Date(comprasFilter.fechaHasta + "T23:59:59");
+        new Date(compra.fecha) <=
+          new Date(comprasFilter.fechaHasta + "T23:59:59");
     }
 
     return matchesSearch && matchesProveedor && matchesFecha;
   });
 
-  // Filtrar salidas por fechas
+  // Filter salidas by date, search (insumo or user), and areaId
   const filteredSalidas = salidas.filter((salida) => {
-    let matchesFecha = true;
+    let matchesFecha = true; // Date filtering is handled by API, but kept for consistency if API changes
     if (salidasFilter.fechaDesde) {
-      matchesFecha = matchesFecha &&
-        new Date(salida.fecha) >= new Date(salidasFilter.fechaDesde + 'T00:00:00');
+      matchesFecha =
+        matchesFecha &&
+        new Date(salida.fecha) >=
+          new Date(salidasFilter.fechaDesde + "T00:00:00");
     }
     if (salidasFilter.fechaHasta) {
-      matchesFecha = matchesFecha &&
-        new Date(salida.fecha) <= new Date(salidasFilter.fechaHasta + 'T23:59:59');
+      matchesFecha =
+        matchesFecha &&
+        new Date(salida.fecha) <=
+          new Date(salidasFilter.fechaHasta + "T23:59:59");
     }
-    return matchesFecha;
+
+    let matchesArea = true;
+    if (salidasFilter.areaId) {
+      matchesArea = String(salida.areaId) === salidasFilter.areaId;
+    }
+
+    let matchesSearch = true;
+    if (salidasFilter.search) {
+      const searchLower = salidasFilter.search.toLowerCase();
+      const searchInInsumos =
+        salida.salidaInsumos?.some(
+          (si) =>
+            si.insumoNombre?.toLowerCase().includes(searchLower) ||
+            si.insumo?.nombre.toLowerCase().includes(searchLower)
+        ) || false;
+      const searchInUsuario =
+        salida.usuarioNombre?.toLowerCase().includes(searchLower) ||
+        salida.usuario?.nombre.toLowerCase().includes(searchLower) ||
+        String(salida.usuarioId).toLowerCase().includes(searchLower) ||
+        false;
+      matchesSearch = searchInInsumos || searchInUsuario;
+    }
+
+    return matchesFecha && matchesArea && matchesSearch;
   });
 
   return (
@@ -314,8 +389,7 @@ const HistorialMovimientos: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       ${compra.total}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium"></td>
                   </tr>
                 ))}
               </tbody>
@@ -382,7 +456,11 @@ const HistorialMovimientos: React.FC = () => {
             }
           >
             <option value="">Todas las áreas</option>
-            {/* Populate with areas from your API */}
+            {areas.map((area) => (
+              <option key={area.id} value={area.id}>
+                {area.nombre}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -398,10 +476,10 @@ const HistorialMovimientos: React.FC = () => {
                     Fecha
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Área ID
+                    Área
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Usuario ID
+                    Usuario
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Cantidades de Insumos
@@ -415,29 +493,24 @@ const HistorialMovimientos: React.FC = () => {
                       {formatDate(salida.fecha)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {salida.area?.nombre
-                        ? salida.area.nombre
-                        : salida.areaId === 1
-                        ? 'Cocina'
-                        : salida.areaId === 2
-                        ? 'Bar'
-                        : salida.areaId === 3
-                        ? 'Almacén'
-                        : salida.areaId}
+                      {salida.areaNombre ||
+                        salida.area?.nombre ||
+                        salida.areaId}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {salida.usuarioId === 1
-                        ? 'admin'
-                        : salida.usuarioId === 2
-                        ? 'cajero1'
-                        : salida.usuarioId === 3
-                        ? 'chef1'
-                        : salida.usuarioId}
+                      {salida.usuarioNombre ||
+                        salida.usuario?.nombre ||
+                        salida.usuarioId}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {salida.salidaInsumos?.length
                         ? salida.salidaInsumos.map((si) => (
                             <div key={si.id}>
+                              {si.insumoNombre
+                                ? `${si.insumoNombre}: `
+                                : si.insumo?.nombre
+                                ? `${si.insumo.nombre}: `
+                                : ""}
                               Cantidad: {si.cantidad}
                             </div>
                           ))

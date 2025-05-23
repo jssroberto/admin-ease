@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
     { name: 'Salidas de insumos', icon: <LogOut size={20} />, path: '/salidas-insumos' },
     { name: 'Compras de insumos', icon: <ShoppingCart size={20} />, path: '/compras-insumos' },
     { name: 'Generar reporte inventario', icon: <FileText size={20} />, path: '/reporte-inventario' },
-    { name: 'Generar reporte costos', icon: <FileText size={20} />, path: '/reporte-costos' },
+  /*   { name: 'Generar reporte costos', icon: <FileText size={20} />, path: '/reporte-costos' }, */
   ];
 
   return (

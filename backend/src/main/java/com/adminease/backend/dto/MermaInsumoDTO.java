@@ -3,13 +3,12 @@ package com.adminease.backend.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
 @AllArgsConstructor
-public class MermaInsumoDTO extends MovimientoInsumoDTO{
+public class MermaInsumoDTO extends MovimientoInsumoDTO {
 
     @NotNull
     private RazonMermaDTO razonMermaDTO;
@@ -17,7 +16,7 @@ public class MermaInsumoDTO extends MovimientoInsumoDTO{
     @NotNull
     private MermaDTO mermaDTO;
 
-    public MermaInsumoDTO(){
+    public MermaInsumoDTO() {
         setTipoMovimiento("MERMA");
     }
 

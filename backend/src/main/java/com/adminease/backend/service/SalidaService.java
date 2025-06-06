@@ -1,5 +1,10 @@
 package com.adminease.backend.service;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.adminease.backend.api.dto.request.SalidaRequest;
 import com.adminease.backend.api.dto.response.SalidaInsumoResponse;
 import com.adminease.backend.api.dto.response.SalidaResponse;
@@ -7,12 +12,6 @@ import com.adminease.backend.mapper.SalidaMapper;
 import com.adminease.backend.model.Salida;
 import com.adminease.backend.repository.SalidaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,6 @@ public class SalidaService {
 
     private final SalidaRepository salidaRepository;
     private final SalidaInsumoService salidaInsumoService;
-    private final InsumoService insumoService;
     private final SalidaMapper salidaMapper;
 
     @Transactional
@@ -31,9 +29,8 @@ public class SalidaService {
         // Persist Salida
         salida = salidaRepository.save(salida);
 
-        List<SalidaInsumoResponse> responses = salidaInsumoService.createSalidaInsumos(
-                salida,
-                request.getSalidaInsumoRequests());
+        List<SalidaInsumoResponse> responses =
+                salidaInsumoService.createSalidaInsumos(salida, request.getSalidaInsumoRequests());
 
         SalidaResponse salidaResponse = salidaMapper.toResponse(salida);
         salidaResponse.setSalidaInsumos(responses);
@@ -48,8 +45,6 @@ public class SalidaService {
             throw new RuntimeException("No se encontraron salidas");
         }
 
-        return salidas.stream()
-                .map(salidaMapper::toResponse)
-                .toList();
+        return salidas.stream().map(salidaMapper::toResponse).toList();
     }
 }

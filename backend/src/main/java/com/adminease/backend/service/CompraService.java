@@ -1,10 +1,10 @@
 package com.adminease.backend.service;
 
-import com.adminease.backend.api.dto.request.CompraInsumoRequest;
+import java.time.ZonedDateTime;
+import java.util.List;
+import org.springframework.stereotype.Service;
 import com.adminease.backend.api.dto.request.CompraRequest;
-import com.adminease.backend.api.dto.response.CompraInsumoResponse;
 import com.adminease.backend.api.dto.response.CompraResponse;
-import com.adminease.backend.mapper.CompraInsumoMapper;
 import com.adminease.backend.mapper.CompraMapper;
 import com.adminease.backend.model.Compra;
 import com.adminease.backend.model.CompraInsumo;
@@ -16,10 +16,6 @@ import com.adminease.backend.repository.ProveedorRepository;
 import com.adminease.backend.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,14 +33,12 @@ public class CompraService {
         if (compras.isEmpty()) {
             throw new EntityNotFoundException("No se encontraron compras");
         }
-        return compras.stream()
-                .map(compraMapper::toResponse)
-                .toList();
+        return compras.stream().map(compraMapper::toResponse).toList();
     }
 
     public CompraResponse findById(Long id) {
-        Compra compra = compraRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Compra con id " + id + " no encontrada"));
+        Compra compra = compraRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Compra con id " + id + " no encontrada"));
 
         return compraMapper.toResponse(compra);
     }
@@ -53,62 +47,57 @@ public class CompraService {
         List<Compra> compras = compraRepository.findByProveedorId(proveedorId);
 
         if (compras.isEmpty()) {
-            throw new EntityNotFoundException("No se encontraron compras para el proveedor con ID: " + proveedorId);
+            throw new EntityNotFoundException(
+                    "No se encontraron compras para el proveedor con ID: " + proveedorId);
         }
 
-        return compras.stream()
-                .map(compraMapper::toResponse)
-                .toList();
+        return compras.stream().map(compraMapper::toResponse).toList();
     }
 
-    public List<CompraResponse> findByFechaBetween(ZonedDateTime fechaInicio, ZonedDateTime fechaFin) {
+    public List<CompraResponse> findByFechaBetween(ZonedDateTime fechaInicio,
+            ZonedDateTime fechaFin) {
         List<Compra> compras = compraRepository.findByFechaBetween(fechaInicio, fechaFin);
 
         if (compras.isEmpty()) {
             throw new EntityNotFoundException("No se encontraron compras en ese rango de fechas");
         }
 
-        return compras.stream()
-                .map(compraMapper::toResponse)
-                .toList();
+        return compras.stream().map(compraMapper::toResponse).toList();
     }
 
-    public List<CompraResponse> findByProveedorIdAndFechaBetween(Long proveedorId, ZonedDateTime fechaInicio,
-            ZonedDateTime fechaFin) {
-        List<Compra> compras = compraRepository.findByProveedorIdAndFechaBetween(proveedorId, fechaInicio, fechaFin);
+    public List<CompraResponse> findByProveedorIdAndFechaBetween(Long proveedorId,
+            ZonedDateTime fechaInicio, ZonedDateTime fechaFin) {
+        List<Compra> compras = compraRepository.findByProveedorIdAndFechaBetween(proveedorId,
+                fechaInicio, fechaFin);
 
         if (compras.isEmpty()) {
-            throw new EntityNotFoundException(
-                    "No se encontraron compras del proveedor con ID " + proveedorId + " en ese rango de fechas");
+            throw new EntityNotFoundException("No se encontraron compras del proveedor con ID "
+                    + proveedorId + " en ese rango de fechas");
         }
 
-        return compras.stream()
-                .map(compraMapper::toResponse)
-                .toList();
+        return compras.stream().map(compraMapper::toResponse).toList();
     }
 
     public List<CompraResponse> findByTotalGreaterThan(Double minimo) {
         List<Compra> compras = compraRepository.findByTotalGreaterThan(minimo);
 
         if (compras.isEmpty()) {
-            throw new EntityNotFoundException("No se encontraron compras con total mayor a " + minimo);
+            throw new EntityNotFoundException(
+                    "No se encontraron compras con total mayor a " + minimo);
         }
 
-        return compras.stream()
-                .map(compraMapper::toResponse)
-                .toList();
+        return compras.stream().map(compraMapper::toResponse).toList();
     }
 
     public List<CompraResponse> findByTotalLessThan(Double maximo) {
         List<Compra> compras = compraRepository.findByTotalLessThan(maximo);
 
         if (compras.isEmpty()) {
-            throw new EntityNotFoundException("No se encontraron compras con total menor a " + maximo);
+            throw new EntityNotFoundException(
+                    "No se encontraron compras con total menor a " + maximo);
         }
 
-        return compras.stream()
-                .map(compraMapper::toResponse)
-                .toList();
+        return compras.stream().map(compraMapper::toResponse).toList();
     }
 
     public CompraResponse createCompra(CompraRequest request) {
@@ -123,8 +112,7 @@ public class CompraService {
 
         // 2. First calculate the total from compraInsumos
         double total = request.getCompraInsumos().stream()
-                .mapToDouble(ci -> ci.getCantidad() * ci.getPrecioUnitario())
-                .sum();
+                .mapToDouble(ci -> ci.getCantidad() * ci.getPrecioUnitario()).sum();
 
         // 3. Create and save Compra with all required fields
         Compra compra = compraMapper.toEntity(request);
@@ -137,9 +125,8 @@ public class CompraService {
         compra = compraRepository.save(compra);
 
         // 5. Create and associate CompraInsumos
-        List<CompraInsumo> compraInsumos = compraInsumoService.createCompraInsumos(
-                request.getCompraInsumos(),
-                compra.getId());
+        List<CompraInsumo> compraInsumos =
+                compraInsumoService.createCompraInsumos(request.getCompraInsumos(), compra.getId());
         compra.setCompraInsumos(compraInsumos);
 
         // 6. Return the response
@@ -147,8 +134,8 @@ public class CompraService {
     }
 
     public CompraResponse updateCompra(Long id, CompraRequest request) {
-        compraRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Compra con ID " + id + " no encontrado"));
+        compraRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Compra con ID " + id + " no encontrado"));
 
         Compra compra = compraMapper.toEntity(request);
         compra = compraRepository.save(compra);
@@ -172,9 +159,8 @@ public class CompraService {
 
         List<CompraInsumo> insumos = compraInsumoRepository.findByCompraId(compraId);
 
-        double total = insumos.stream()
-                .mapToDouble(ci -> ci.getCantidad() * ci.getPrecioUnitario())
-                .sum();
+        double total =
+                insumos.stream().mapToDouble(ci -> ci.getCantidad() * ci.getPrecioUnitario()).sum();
 
         compra.setTotal(total);
         compraRepository.save(compra);

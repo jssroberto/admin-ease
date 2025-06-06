@@ -1,10 +1,9 @@
 package com.adminease.backend.repository;
 
-import com.adminease.backend.model.Compra;
-import com.adminease.backend.model.CompraInsumo;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.List;
+import com.adminease.backend.model.CompraInsumo;
 
 @Repository
 public interface CompraInsumoRepository extends JpaRepository<CompraInsumo, Long> {
